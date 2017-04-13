@@ -9,10 +9,8 @@ if __name__ == '__main__':
 
     interval = int(args.seconds) 
 
-    sys.stdout.write("Elapsed:")
-    sys.stdout.flush()
-    for i in range(1, interval+1):
-        time.sleep(1)
-        sys.stdout.write('\r\t  %d' % i)
+    for i in range(0, interval+1):
+        sys.stdout.write('\rElapsed:  %d' % i)
         sys.stdout.flush()
+        time.sleep(1)
     print("\n*** COMPLETE ***")
