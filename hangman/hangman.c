@@ -99,17 +99,15 @@ void initializeGame(PGAME g, char *rWord)
     {
         strncat(g->line, &c, sizeof(char));
     }
+    printf("\n");
 }
 
 void printGame(PGAME g)
 {
-    printf("\n");
-    printf("%s%d\n", "wrong   guesses: ", g->numWrongGuess);
-    printf("%s%d\n", "correct guesses: ", g->numWrongGuess);
-    printf("%s%s\n", "word: ", g->word); 
-    printf("%s%s\n", "line: ", g->line);
-
-    printf("\n"); 
+    printf("%d ", g->numWrongGuess);
+    printf("%s ", g->line);
+    printf("%s", " : ");
+    fflush(stdout);
 }
 
 int main(int argc, char *argv[])
@@ -138,6 +136,22 @@ int main(int argc, char *argv[])
     initializeGame(&hangmanGame, randomWord);
 
     printGame(&hangmanGame);
+
+    while ( 1 ) 
+    {
+        // get user input (choice of letter)    
+
+        char letterChoice;
+        scanf("%1c", &letterChoice); 
+    
+        //updateGame(&hangmanGame, &letterChoice); 
+    
+
+    }
+
+
+
+    printf("\n");
 
     return 0;
 }
