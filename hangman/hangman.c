@@ -113,7 +113,7 @@ void printGame(PGAME g)
     fflush(stdout);
 }
 
-updateGame(PGAME g, char * choice)
+void updateGame(PGAME g, char * choice)
 {
     int i;
     int didNotFindChoice = TRUE ;
@@ -132,6 +132,28 @@ updateGame(PGAME g, char * choice)
     {
 	g->numWrongGuess++;
     }
+}
+
+int checkWin(PGAME g)
+{
+    int gameWon = FALSE;
+    char c = '_';
+
+    if ( ( g->numWrongGuess <=  5 ) &&  (! strchr(g->line, c) ) )
+    {
+        gameWon = TRUE;
+    }
+    return gameWon;
+}
+
+int checkLoss(PGAME g)
+{
+    int gameLost = FALSE;
+    if ( g->numWrongGuess > 5 ) 
+    {
+	gameLost = TRUE;
+    }
+    return gameLost;
 }
 
 int main(int argc, char *argv[])
@@ -171,15 +193,20 @@ int main(int argc, char *argv[])
     
         updateGame(&hangmanGame, &letterChoice);
 
-	//checkWinOrLoss(&hangmanGame);
-	
+	if ( checkLoss( &hangmanGame ) )
+	{
+	    printf("%s\n", "GAME LOST");
+	    printf("%s%s\n", "WORD: ", hangmanGame.word);
+	    break;
+	}
+
+	if ( checkWin( &hangmanGame) )
+	{
+            printf("%s%d\n", "GAME WON!!! Number of misses: ", hangmanGame.numWrongGuess );
+	    break;
+	}
 	printGame(&hangmanGame);
-    
-
     }
-
-
-
     printf("\n");
 
     return 0;
