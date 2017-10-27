@@ -24,7 +24,6 @@ typedef struct statistics {
 } STATS, *PSTATS;
 
 typedef struct game {
-    int  numCorrectGuess;
     int  numWrongGuess;
     char *word;
     char line[MAX_WORD_LEN];
@@ -73,6 +72,19 @@ void displayStats(PSTATS s)
     printf("  %d%s%d%s", s->wins, " wins / ",  s->losses, " losses" );
     printf("\n******************************\n");
     return;
+}
+
+int writeStats(PSTATS s, const char *filepath)
+{
+    FILE *fp = NULL; 
+
+    if ( ( fp = fopen( filepath, "w" ) ) == NULL ) 
+    {
+            
+
+    }
+
+    return FAILURE;    
 }
 
 int readStats(PSTATS s, const char *filepath)
@@ -152,11 +164,6 @@ Exit:
     return status; 
 }
 
-int writeStats(PSTATS s)
-{
-
-    return FAILURE;    
-}
 
 int selectWord(const char *filepath, char **rWord)
 {
@@ -226,7 +233,6 @@ void initializeGame(PGAME g, char *rWord)
     int i;
     char c = '_';
 
-    g->numCorrectGuess = 0;
     g->numWrongGuess = 0;
     g->word = rWord;
 
@@ -320,7 +326,7 @@ int main(int argc, char *argv[])
     memset(&hangmanStats, '\0', sizeof(hangmanStats));
 
     // read in stats from file
-    if ( readStats(&hangmanStats, statsFile) == FAILURE)
+    if ( readStats(&hangmanStats, statsFile ) == FAILURE)
     {
         fprintf(stderr, "%s\n", "error processing stats file. exiting...");    
         exit(1);
@@ -356,6 +362,9 @@ int main(int argc, char *argv[])
 	}
 	printGame(&hangmanGame);
     }
+
+    writeStats( &hangmanStats, statsFile );
+
     printf("\n");
 
     return 0;
