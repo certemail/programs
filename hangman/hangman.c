@@ -26,30 +26,84 @@ typedef struct game {
     char line[MAX_WORD_LEN];
 } GAME, *PGAME;
 
+int validateStats(char * buf)
+{
+   return SUCCESS; 
+}
+
 void displayStats(PSTATS s)
 {
     printf("\n******************************\n");
-    printf("%s%d", "Game# ", s->gameNumber);
+    printf("%s%d%s", "Game# ", s->gameNumber, "  ");
     printf("  %d%s%d%s", s->wins, " wins / ",  s->losses, " losses" );
     printf("\n******************************\n");
+    return;
 }
 
-void readStats(PSTATS s, const char *filepath)
+int readStats(PSTATS s, const char *filepath)
 {
+    int status = FAILURE;
     FILE * fp = NULL;
     if ( ( fp = fopen( filepath, "r" ) ) == NULL )
     {
-        printf("%s%s\n", "file not found: ", filepath);    
+        fprintf( stderr, "%s%s\n", "file not found: ", filepath );
 
         // initialize stats structure (first time playing)
         s->gameNumber = 0;
         s->wins = 0;
         s->losses = 0;
+
+        status = SUCCESS;
     }
+
+    else 
+    {
+        // stats file already exists, read in game stats
+        char *p;
+        char line[10];
+        int num;
+        while ( fgets(line, sizeof(line), fp ) != NULL )
+        {
+            // remove newline
+            p = strchr(line, '\n');
+            if ( p )
+            {
+                *p = '\0';
+                printf("\t%s%s%zu\n", line, "  strlen(line): ", strlen(line));
+                if (  ( num = validateStats ( line ) ) == SUCCESS )
+                {
+                    // initialize stats struct with valid values
+                }
+                else
+                {
+                    printf("%s%s\n", "invalid value in stats file: ", line);
+                    status = FAILURE;
+                    goto Exit;
+                }
+            } 
+
+            else 
+            {
+                printf("%s%s\n", "error with parsing line: ", line);
+                status = FAILURE;
+                goto Exit;
+            }
+        }
+        status = SUCCESS;
+    }
+
+Exit:
+    if ( fp )
+    {
+        fclose(fp);
+    }
+
+    return status; 
 }
 
 int writeStats(PSTATS s)
 {
+
     return FAILURE;    
 }
 
@@ -63,7 +117,9 @@ int selectWord(const char *filepath, char **rWord)
     int numWords = 0;
     int randomIdx = 0;
 
+#ifdef DEBUG
     printf("%s%s\n", "OPENING FILE: ", filepath);
+#endif
     FILE *fp = NULL;
     if ( ( fp = fopen( filepath, "r" )) == NULL )
     {
@@ -116,7 +172,6 @@ int selectWord(const char *filepath, char **rWord)
 
 void initializeGame(PGAME g, char *rWord)
 {
-    printf("\n%s\n", "initializing game...");
     int i;
     char c = '_';
 
@@ -210,11 +265,18 @@ int main(int argc, char *argv[])
     printf("%s%s\n", "random word selected: ", randomWord);
 #endif
 
+    memset(&hangmanGame, '\0', sizeof(hangmanGame));
+    memset(&hangmanStats, '\0', sizeof(hangmanStats));
+
     // read in stats from file
-    readStats(&hangmanStats, statsFile);
+    if ( readStats(&hangmanStats, statsFile) == FAILURE)
+    {
+        printf("%s\n", "error processing stats file. exiting...");    
+        exit(1);
+    }
+
     displayStats(&hangmanStats);
 
-    //initialize game
     initializeGame(&hangmanGame, randomWord);
 
     printGame(&hangmanGame);
