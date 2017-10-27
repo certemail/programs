@@ -1,3 +1,4 @@
+// RS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -76,15 +77,21 @@ void displayStats(PSTATS s)
 
 int writeStats(PSTATS s, const char *filepath)
 {
+    int status = FAILURE;
     FILE *fp = NULL; 
 
-    if ( ( fp = fopen( filepath, "w" ) ) == NULL ) 
+    if ( ( fp = fopen( filepath, "w" ) ) != NULL ) 
     {
-            
-
+        fprintf( fp, "%d\n%d\n%d\n", s->gameNumber, s->wins, s->losses );            
+        status = SUCCESS;
     }
 
-    return FAILURE;    
+    if ( fp ) 
+    {
+        fclose( fp );
+    }
+
+    return status;    
 }
 
 int readStats(PSTATS s, const char *filepath)
@@ -96,7 +103,7 @@ int readStats(PSTATS s, const char *filepath)
         fprintf( stderr, "%s%s\n", "file not found: ", filepath );
 
         // initialize stats structure (first time playing)
-        s->gameNumber = 0;
+        s->gameNumber = 1;
         s->wins = 0;
         s->losses = 0;
 
@@ -352,17 +359,20 @@ int main(int argc, char *argv[])
 	{
 	    printf("%s\n", "GAME LOST");
 	    printf("%s%s\n", "WORD: ", hangmanGame.word);
+            hangmanStats.losses++;
 	    break;
 	}
 
 	if ( checkWin( &hangmanGame) )
 	{
             printf("%s%d\n", "GAME WON!!! Number of misses: ", hangmanGame.numWrongGuess );
+            hangmanStats.wins++;
 	    break;
 	}
 	printGame(&hangmanGame);
     }
 
+    hangmanStats.gameNumber++;
     writeStats( &hangmanStats, statsFile );
 
     printf("\n");
