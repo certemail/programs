@@ -68,10 +68,14 @@ int validateStats(char * buff, int *si)
 
 void displayStats(PSTATS s)
 {
-    printf("\n******************************\n");
+    printf("\n***********************************\n");
     printf("%s%d%s", "Game# ", s->gameNumber, "  ");
-    printf("  %d%s%d%s", s->wins, " wins / ",  s->losses, " losses" );
-    printf("\n******************************\n");
+    printf("  %d", s->wins);
+    printf("  %s%c", " win", (s->wins == 1) ? ' ' : 's');
+    printf("%s", " / ");
+    printf("  %d", s->losses);
+    printf("  %s", "losses" );
+    printf("\n***********************************\n");
     return;
 }
 
