@@ -31,7 +31,6 @@ typedef struct game {
 } GAME, *PGAME;
 
 
-
 int validateStats(char * buff, int *si)
 {
     int status = FAILURE;
@@ -64,7 +63,7 @@ int validateStats(char * buff, int *si)
     }
 
     return status;
-}
+}//-------------------------------
 
 void displayStats(PSTATS s)
 {
@@ -74,10 +73,10 @@ void displayStats(PSTATS s)
     printf("  %s%c", " win", (s->wins == 1) ? ' ' : 's');
     printf("%s", " / ");
     printf("  %d", s->losses);
-    printf("  %s", "losses" );
+    printf("  %s%s", " loss", (s->losses == 1) ? " " : "es");
     printf("\n***********************************\n");
     return;
-}
+}//-------------------------------
 
 int writeStats(PSTATS s, const char *filepath)
 {
@@ -96,7 +95,7 @@ int writeStats(PSTATS s, const char *filepath)
     }
 
     return status;    
-}
+}//-------------------------------
 
 int readStats(PSTATS s, const char *filepath)
 {
@@ -173,11 +172,12 @@ Exit:
     }
 
     return status; 
-}
-
+}//-------------------------------
 
 int selectWord(const char *filepath, char **rWord)
 {
+    // TODO validate words are properly formed
+
     srand(time(NULL));
 
     char word[MAX_WORD_LEN];
@@ -237,7 +237,7 @@ int selectWord(const char *filepath, char **rWord)
     fclose( fp );
 
     return SUCCESS;
-}
+} //-------------------------------
 
 void initializeGame(PGAME g, char *rWord)
 {
@@ -255,7 +255,7 @@ void initializeGame(PGAME g, char *rWord)
         strncat(g->line, &c, sizeof(char));
     }
     printf("\n");
-}
+}//-------------------------------
 
 void printGame(PGAME g)
 {
@@ -263,7 +263,7 @@ void printGame(PGAME g)
     printf("%s ", g->line);
     printf("%s", " : ");
     fflush(stdout);
-}
+}//-------------------------------
 
 void updateGame(PGAME g, char * choice)
 {
@@ -284,7 +284,7 @@ void updateGame(PGAME g, char * choice)
     {
 	g->numWrongGuess++;
     }
-}
+}//-------------------------------
 
 int checkWin(PGAME g)
 {
@@ -296,7 +296,7 @@ int checkWin(PGAME g)
         gameWon = TRUE;
     }
     return gameWon;
-}
+}//-------------------------------
 
 int checkLoss(PGAME g)
 {
@@ -306,14 +306,14 @@ int checkLoss(PGAME g)
 	gameLost = TRUE;
     }
     return gameLost;
-}
+}//-------------------------------
 
 int main(int argc, char *argv[])
 {
     GAME            hangmanGame;
     STATS           hangmanStats;
-    const char      *statsFile = "hangman_stats.txt";
-    char            *wordlist = "words";
+    const char      *statsFile = "hangman_stats.txt";   // TODO change path to home directory  (~/.stats)
+    char            *wordlist = "words";                // TODO change path to home directory (~/.words)
     char            *randomWord = NULL;
 
     if (argc > 2) {
@@ -325,6 +325,7 @@ int main(int argc, char *argv[])
     {
         wordlist = argv[1];    
     }
+
     if (selectWord(wordlist, &randomWord) == FAILURE ) 
     {
         exit(2);
@@ -351,12 +352,15 @@ int main(int argc, char *argv[])
 
     while ( 1 ) 
     {
+        // TODO
         // get user input (choice of letter)    
 	// get one byte, extra getchar() to eat newline
 	char letterChoice;
-	letterChoice  = getchar();
-	getchar();
+        letterChoice  = getchar();
+        getchar();
     
+        // TODO validate letterChoice is lower-case ASCII character
+
         updateGame(&hangmanGame, &letterChoice);
 
 	if ( checkLoss( &hangmanGame ) )
@@ -382,4 +386,4 @@ int main(int argc, char *argv[])
     printf("\n");
 
     return 0;
-}
+}//-------------------------------
