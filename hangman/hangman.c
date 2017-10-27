@@ -7,8 +7,11 @@
 #define MAX_WORD_LEN           30 
 #define MAX_NUM_WRONG_GUESSES   5
 
-#define SUCCESS                 0
-#define FAILURE                 1
+#define SUCCESS                  1
+#define FAILURE                  0 
+
+#define TRUE                     1
+#define FALSE                    0
 
 typedef struct statistics {
     int wins;
@@ -110,6 +113,27 @@ void printGame(PGAME g)
     fflush(stdout);
 }
 
+updateGame(PGAME g, char * choice)
+{
+    int i;
+    int didNotFindChoice = TRUE ;
+
+    // check if choice appears in word
+    for ( i = 0; i < strlen(g->word); i++)
+    {
+	// correct guess - overwrite place in line with letter choice
+	if ( g->word[i] == *choice ) 
+	{
+	    g->line[i] = *choice;
+	    didNotFindChoice = FALSE;
+	} 
+    }  
+    if ( didNotFindChoice )
+    {
+	g->numWrongGuess++;
+    }
+}
+
 int main(int argc, char *argv[])
 {
     GAME hangmanGame;
@@ -140,11 +164,16 @@ int main(int argc, char *argv[])
     while ( 1 ) 
     {
         // get user input (choice of letter)    
-
-        char letterChoice;
-        scanf("%1c", &letterChoice); 
+	// get one byte, extra getchar() to eat newline
+	char letterChoice;
+	letterChoice  = getchar();
+	getchar();
     
-        //updateGame(&hangmanGame, &letterChoice); 
+        updateGame(&hangmanGame, &letterChoice);
+
+	//checkWinOrLoss(&hangmanGame);
+	
+	printGame(&hangmanGame);
     
 
     }
