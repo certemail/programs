@@ -14,9 +14,9 @@
 #define FALSE                    0
 
 typedef struct statistics {
+    int gameNumber;
     int wins;
     int losses;
-    int gameNumber;
 } STATS, *PSTATS;
 
 typedef struct game {
@@ -26,7 +26,34 @@ typedef struct game {
     char line[MAX_WORD_LEN];
 } GAME, *PGAME;
 
-int selectWord(char *filepath, char **rWord)
+void displayStats(PSTATS s)
+{
+    printf("\n******************************\n");
+    printf("%s%d", "Game# ", s->gameNumber);
+    printf("  %d%s%d%s", s->wins, " wins / ",  s->losses, " losses" );
+    printf("\n******************************\n");
+}
+
+void readStats(PSTATS s, const char *filepath)
+{
+    FILE * fp = NULL;
+    if ( ( fp = fopen( filepath, "r" ) ) == NULL )
+    {
+        printf("%s%s\n", "file not found: ", filepath);    
+
+        // initialize stats structure (first time playing)
+        s->gameNumber = 0;
+        s->wins = 0;
+        s->losses = 0;
+    }
+}
+
+int writeStats(PSTATS s)
+{
+    return FAILURE;    
+}
+
+int selectWord(const char *filepath, char **rWord)
 {
     srand(time(NULL));
 
@@ -52,7 +79,10 @@ int selectWord(char *filepath, char **rWord)
         if ( p )
         {
             *p = '\0';
+#ifdef DEBUG
             printf("\t%s\n", word);
+#endif
+
         } 
 
         else 
@@ -83,7 +113,6 @@ int selectWord(char *filepath, char **rWord)
 
     return SUCCESS;
 }
-
 
 void initializeGame(PGAME g, char *rWord)
 {
@@ -158,10 +187,11 @@ int checkLoss(PGAME g)
 
 int main(int argc, char *argv[])
 {
-    GAME hangmanGame;
-    char *wordlist = "words";
-    char *randomWord = NULL;
-    
+    GAME            hangmanGame;
+    STATS           hangmanStats;
+    const char      *statsFile = "hangman_stats.txt";
+    char            *wordlist = "words";
+    char            *randomWord = NULL;
 
     if (argc > 2) {
         printf("%s%s%s\n", "usage: ", argv[0], " <path_to_word_list>");
@@ -176,7 +206,13 @@ int main(int argc, char *argv[])
     {
         exit(2);
     }
+#ifdef DEBUG
     printf("%s%s\n", "random word selected: ", randomWord);
+#endif
+
+    // read in stats from file
+    readStats(&hangmanStats, statsFile);
+    displayStats(&hangmanStats);
 
     //initialize game
     initializeGame(&hangmanGame, randomWord);
