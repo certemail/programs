@@ -2,10 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <errno.h>
+#include <limits.h>
 
+#define MAX_STATS            1000
 #define MAX_WORDS             100
 #define MAX_WORD_LEN           30 
 #define MAX_NUM_WRONG_GUESSES   5
+#define NUM_LINES_IN_STAT_FILE  3
 
 #define SUCCESS                  1
 #define FAILURE                  0 
@@ -26,9 +30,40 @@ typedef struct game {
     char line[MAX_WORD_LEN];
 } GAME, *PGAME;
 
-int validateStats(char * buf)
+
+
+int validateStats(char * buff, int *si)
 {
-   return SUCCESS; 
+    int status = FAILURE;
+
+    // validate buffer can be converted from string to integer
+    char *end;
+    errno = 0;
+
+    const long sl = strtol(buff, &end, 10);
+    
+    if (end == buff) {
+        fprintf(stderr, "%s: not a decimal number\n", buff);
+    } else if ('\0' != *end) {
+        fprintf(stderr, "%s: extra characters at end of input: %s\n", buff, end);
+    } else if (( LONG_MIN == sl || LONG_MAX == sl ) && ERANGE == errno ) {
+        fprintf(stderr, "%s out of range of type long\n", buff);
+    } else if ( sl > INT_MAX) {
+        fprintf( stderr, "%ld greater than INT_MAX\n", sl);
+    } else if ( sl < INT_MIN) {
+        fprintf(stderr, "%ld less than INT_MIN\n", sl);
+    } else {
+        *si = (int)sl;
+        status = SUCCESS; 
+    }
+    
+    // validate converted integer is with acceptable range
+    if ( *si < 0 || *si > MAX_STATS )
+    {
+        status = FAILURE;
+    }
+
+    return status;
 }
 
 void displayStats(PSTATS s)
@@ -60,23 +95,32 @@ int readStats(PSTATS s, const char *filepath)
     {
         // stats file already exists, read in game stats
         char *p;
-        char line[10];
-        int num;
-        while ( fgets(line, sizeof(line), fp ) != NULL )
+        char line[10] = { '\0' };
+
+        int gameStatNum = 0;
+        int temp[NUM_LINES_IN_STAT_FILE] = { 0 };
+        int linesSuccessfullyRead = 0;
+
+        // only read in 3 lines
+        while ( ( fgets(line, sizeof(line), fp ) != NULL ) && linesSuccessfullyRead < NUM_LINES_IN_STAT_FILE )
         {
             // remove newline
             p = strchr(line, '\n');
             if ( p )
             {
                 *p = '\0';
+#ifdef DEBUG
                 printf("\t%s%s%zu\n", line, "  strlen(line): ", strlen(line));
-                if (  ( num = validateStats ( line ) ) == SUCCESS )
+#endif
+                if ( ( validateStats ( line, &gameStatNum ) ) == SUCCESS )
                 {
                     // initialize stats struct with valid values
+                    temp[linesSuccessfullyRead] = gameStatNum; 
+                    linesSuccessfullyRead++;
                 }
                 else
                 {
-                    printf("%s%s\n", "invalid value in stats file: ", line);
+                    fprintf(stderr, "%s%s\n", "invalid value in stats file: ", line);
                     status = FAILURE;
                     goto Exit;
                 }
@@ -84,11 +128,18 @@ int readStats(PSTATS s, const char *filepath)
 
             else 
             {
-                printf("%s%s\n", "error with parsing line: ", line);
+                fprintf(stderr, "%s%s\n", "error with parsing line: ", line);
                 status = FAILURE;
                 goto Exit;
             }
-        }
+
+        } // end while
+        
+        // initialize struct after first valid lines are read (lines after are ignored)
+        s->gameNumber = temp[0];
+        s->wins = temp[1];
+        s->losses = temp[2];
+            
         status = SUCCESS;
     }
 
@@ -271,7 +322,7 @@ int main(int argc, char *argv[])
     // read in stats from file
     if ( readStats(&hangmanStats, statsFile) == FAILURE)
     {
-        printf("%s\n", "error processing stats file. exiting...");    
+        fprintf(stderr, "%s\n", "error processing stats file. exiting...");    
         exit(1);
     }
 
