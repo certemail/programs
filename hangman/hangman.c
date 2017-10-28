@@ -352,13 +352,33 @@ int main(int argc, char *argv[])
 
     while ( 1 ) 
     {
-        // TODO
-        // get user input (choice of letter)    
-	// get one byte, extra getchar() to eat newline
 	char letterChoice;
-        letterChoice  = getchar();
-        getchar();
-    
+	char tempBuf[5];
+	int ch;
+	char *p;
+
+        // read from stdin restricted to 5 bytes saved in temp buffer
+	if (fgets(tempBuf, sizeof(tempBuf), stdin)) 
+	{
+            p = strchr(tempBuf, '\n');
+            if (p) 
+            {
+                *p = '\0';
+	    }	
+	    else 
+            {
+                // newline not found (input exceeded buffer size) flush stdin to end of line
+                while (((ch = getchar()) != '\n')
+                            && !feof(stdin)
+                            && !ferror(stdin)  );
+            }
+	}
+	else 
+        {
+            fprintf(stderr, "%s\n", "fgets failed to read from stdin");
+	}
+	letterChoice = tempBuf[0];
+
         // TODO validate letterChoice is lower-case ASCII character
 
         updateGame(&hangmanGame, &letterChoice);
