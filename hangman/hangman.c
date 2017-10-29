@@ -63,7 +63,7 @@ int validateStats(char * buff, int *si)
     }
 
     return status;
-}//-------------------------------
+}//-------------------------------validateStats()
 
 void displayStats(PSTATS s)
 {
@@ -76,7 +76,7 @@ void displayStats(PSTATS s)
     printf("  %s%s", " loss", (s->losses == 1) ? " " : "es");
     printf("\n***********************************\n");
     return;
-}//-------------------------------
+}//-------------------------------displayStats()
 
 int writeStats(PSTATS s, const char *filepath)
 {
@@ -95,7 +95,7 @@ int writeStats(PSTATS s, const char *filepath)
     }
 
     return status;    
-}//-------------------------------
+}//-------------------------------end writeStats()
 
 int readStats(PSTATS s, const char *filepath)
 {
@@ -172,7 +172,7 @@ Exit:
     }
 
     return status; 
-}//-------------------------------
+}//-------------------------------end readStats() 
 
 int selectWord(const char *filepath, char **rWord)
 {
@@ -237,7 +237,7 @@ int selectWord(const char *filepath, char **rWord)
     fclose( fp );
 
     return SUCCESS;
-} //-------------------------------
+} //-------------------------------end selectWord()
 
 void initializeGame(PGAME g, char *rWord)
 {
@@ -255,7 +255,7 @@ void initializeGame(PGAME g, char *rWord)
         strncat(g->line, &c, sizeof(char));
     }
     printf("\n");
-}//-------------------------------
+}//-------------------------------end initializeGame()
 
 void printGame(PGAME g)
 {
@@ -263,7 +263,7 @@ void printGame(PGAME g)
     printf("%s ", g->line);
     printf("%s", " : ");
     fflush(stdout);
-}//-------------------------------
+}//-------------------------------end printGame()
 
 void updateGame(PGAME g, char * choice)
 {
@@ -284,7 +284,7 @@ void updateGame(PGAME g, char * choice)
     {
 	g->numWrongGuess++;
     }
-}//-------------------------------
+}//-------------------------------end updateGame()
 
 int checkWin(PGAME g)
 {
@@ -296,7 +296,7 @@ int checkWin(PGAME g)
         gameWon = TRUE;
     }
     return gameWon;
-}//-------------------------------
+}//-------------------------------end checkWin()
 
 int checkLoss(PGAME g)
 {
@@ -306,7 +306,7 @@ int checkLoss(PGAME g)
 	gameLost = TRUE;
     }
     return gameLost;
-}//-------------------------------
+}//-------------------------------end checkLoss()
 
 int main(int argc, char *argv[])
 {
@@ -406,4 +406,4 @@ int main(int argc, char *argv[])
     printf("\n");
 
     return 0;
-}//-------------------------------
+}//-------------------------------end main()
