@@ -14,7 +14,6 @@
 
 #define SUCCESS                  1
 #define FAILURE                  0 
-
 #define TRUE                     1
 #define FALSE                    0
 
@@ -307,88 +306,134 @@ int checkLoss(PGAME g)
     return gameLost;
 }//-------------------------------end checkLoss()
 
+// reads HOME environment variable and concatenates it with filename
+int concatHomeDirAndFile(char **fullPath, const char *fileName)
+{
+    char *buf;
+    char *homeEnv; 
+    size_t homeEnvLen;
+    size_t bufLen;
+    size_t pathSepLen;
+    size_t strLen; 
+    size_t totalSize;
+    char *pathSep = "/";
+    int status = FAILURE;
+    
+    homeEnv = getenv("HOME");
+    if ( homeEnv == NULL ) 
+    {
+        // HOME not set
+        fprintf(stderr, "%s\n", "HOME environment variable not set...");
+        goto Exit;
+    } 
+    else 
+    {
+        homeEnvLen = strlen(homeEnv) + 1 ;
+        buf = (char *)malloc(homeEnvLen);
+        if ( buf == NULL ) 
+        {
+            fprintf( stderr, "%s\n", "malloc failed");
+            goto Exit;
+        }
+        // memcpy includes NULL terminator
+        memcpy( buf, homeEnv, homeEnvLen );
+    }
+
+    bufLen = strlen(buf);
+    pathSepLen = strlen(pathSep);
+    strLen = strlen(fileName);
+
+#ifdef DEBUG
+    printf("bufLen: %ld\n", bufLen);
+    printf("pathSepLen: %ld\n", pathSepLen);
+    printf("wordListLen: %ld\n", strLen);
+    printf("Total buffer size (including NULL): %ld\n", bufLen + pathSepLen + strLen + 1);
+#endif
+
+    // add one for NULL terminator
+    totalSize = bufLen + pathSepLen + strLen + 1;
+    
+    *fullPath = (char *)malloc( totalSize );
+    if ( *fullPath == NULL )
+    {
+        fprintf(stderr, "%s\n", "malloc failed");
+        goto Exit;
+    }
+
+    // snprintf() returns on success number of characters printed excluding the NULL terminator
+    int n;
+    n = snprintf( *fullPath, totalSize, "%s%s%s", buf, pathSep, fileName );
+    if ( n < 0 || n > totalSize - 1 ) {
+        goto Exit;
+    }
+    status = SUCCESS;
+
+Exit:
+    if ( buf ) {
+        free( buf );
+    }
+    return status;
+}
+
 int main(int argc, char *argv[])
 {
     GAME            hangmanGame;
     STATS           hangmanStats;
-    const char      *statsFile = "hangman_stats.txt";   // TODO change path to home directory  (~/.stats)
-    char            *wordlist = "words";                // TODO change path to home directory (~/.words)
+    const char      *defaultStatsFile = ".stats";   
+    const char      *defaultWordFile = ".words";
+    const char      *wordlist = NULL;              
     char            *randomWord = NULL;
+    char            *fullPathToDefaultWordList = NULL;
+    char            *fullPathToStatsFile = NULL;
 
     if (argc > 2) {
         printf("%s%s%s\n", "usage: ", argv[0], " <path_to_word_list>");
         exit( 1 );
     }
 
-    // **********  read HOME environment variable
-    char *buf;
-    char *home = getenv("HOME");
-    if ( home == NULL ) 
-    {
-        // HOME not set
-        fprintf(stderr, "%s\n", "HOME environment variable not set...exiting...");
-        exit(1);
-    } 
-    else 
-    {
-        size_t len = strlen(home) + 1 ;
-        buf = (char *)malloc(len);
-        if ( buf == NULL ) 
-        {
-            fprintf( stderr, "%s\n", "malloc failed");
-        }
-        // memcpy includes NULL terminator
-        memcpy( buf, home, len );
-
-        printf("%s%s\n", "home directory: ", buf );
-        printf("%s%ld\n", "strlen(buf)", strlen(buf) );
-    }
-    char *pathSep = "/";
-
-    size_t bufLen = strlen(buf);
-    size_t pathSepLen = strlen(pathSep);
-    size_t wordListLen = strlen(".words");
-
-    printf("bufLen: %ld\n", bufLen);
-    printf("pathSepLen: %ld\n", pathSepLen);
-    printf("wordListLen: %ld\n", wordListLen);
-    
-    printf("Total buffer size (excluding NULL): %ld\n", bufLen + pathSepLen + wordListLen);
-    size_t totalSize = bufLen + pathSepLen + wordListLen;
-    
-    char *fullPath = (char *)malloc(totalSize + 1);
-    if (fullPath == NULL)
-    {
-        fprintf(stderr, "%s\n", "malloc failed");
-        exit(1);
-    }
-    snprintf( fullPath, totalSize + 1, "%s%s%s", buf, pathSep, ".words" );
-    printf("FULLPATH: %s\n", fullPath);
-    // ************ end read HOME environment var
-
-
+    // word list provided by cmd line arg 
     if (argv[1]) 
     {
         wordlist = argv[1];    
+    } 
+    else 
+    {
+        // build full path to default word list in HOME directory
+        if ( concatHomeDirAndFile( &fullPathToDefaultWordList, defaultWordFile) == FAILURE ) 
+        {
+            fprintf( stderr, "FAILURE for concatHomeDirAndFile()\n" );
+            goto Exit;
+        }
+        wordlist = fullPathToDefaultWordList;
     }
 
+    // select random word
     if (selectWord(wordlist, &randomWord) == FAILURE ) 
     {
-        exit(2);
+        fprintf( stderr, "FAILURE for selectWord()\n" );
+        goto Exit;
     }
-#ifdef DEBUG
-    printf("%s%s\n", "random word selected: ", randomWord);
-#endif
 
+    // zero out memory
     memset(&hangmanGame, '\0', sizeof(hangmanGame));
     memset(&hangmanStats, '\0', sizeof(hangmanStats));
 
+    // build full path to stats file in HOME directory
+    if (concatHomeDirAndFile( &fullPathToStatsFile, defaultStatsFile ) == FAILURE )
+    {
+        fprintf( stderr, "FAILURE for concatHomeDirAndFile()\n" );
+        goto Exit;
+    }
+    
     // read in stats from file
-    if ( readStats(&hangmanStats, statsFile ) == FAILURE)
+    if ( readStats(&hangmanStats, fullPathToStatsFile ) == FAILURE)
     {
         fprintf(stderr, "%s\n", "error processing stats file. exiting...");    
-        exit(1);
+        goto Exit;
     }
+
+    printf("%s%s\n", "Using word list:  ", wordlist );
+    printf( "%s%s\n", "Using stats file: ", fullPathToStatsFile );
 
     displayStats(&hangmanStats);
 
@@ -422,6 +467,7 @@ int main(int argc, char *argv[])
 	else 
         {
             fprintf(stderr, "%s\n", "fgets failed to read from stdin");
+            goto Exit;
 	}
 	letterChoice = tempBuf[0];
 
@@ -447,9 +493,12 @@ int main(int argc, char *argv[])
     }
 
     hangmanStats.gameNumber++;
-    writeStats( &hangmanStats, statsFile );
+    writeStats( &hangmanStats, defaultStatsFile );
 
-    printf("\n");
+Exit:
+    if ( fullPathToDefaultWordList ) {
+        free ( fullPathToDefaultWordList );
+    }
 
     return 0;
 }//-------------------------------end main()
