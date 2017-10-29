@@ -379,7 +379,7 @@ int main(int argc, char *argv[])
     STATS           hangmanStats;
     const char      *defaultStatsFile = ".stats";   
     const char      *defaultWordFile = ".words";
-    const char      *wordlist = NULL;              
+    char            *wordlist = NULL;              
     char            *randomWord = NULL;
     char            *fullPathToDefaultWordList = NULL;
     char            *fullPathToStatsFile = NULL;
@@ -390,20 +390,20 @@ int main(int argc, char *argv[])
     }
 
     // word list provided by cmd line arg 
-    if (argv[1]) 
+    if ( argv[1] ) 
     {
-        wordlist = argv[1];    
-        //wordlist = (char *)malloc( strlen (argv[1] + 1 ));
-        //if ( wordlist != NULL )
-        //{
-        //    strcpy( wordlist, argv[1] );
-        //    wordlist[ strlen(argv[1]) ] = '\0';
-        //} 
-        //else
-        //{
-        //    fprintf( stderr, "%s\n", "malloc() failed" );
-        //    goto Exit;
-        //}
+        //wordlist = argv[1];    
+        wordlist = (char *)malloc( strlen (argv[1] + 1 ));
+        if ( wordlist != NULL )
+        {
+            strcpy( wordlist, argv[1] );
+            wordlist[ strlen(argv[1]) ] = '\0';
+        } 
+        else
+        {
+            fprintf( stderr, "%s\n", "malloc() failed" );
+            goto Exit;
+        }
     } 
     else 
     {
@@ -506,8 +506,8 @@ int main(int argc, char *argv[])
 
 Exit:
     // free heap memory still in use
-    if ( fullPathToDefaultWordList ) {
-        free ( fullPathToDefaultWordList );
+    if ( wordlist ) {
+        free ( wordlist );
     }
     if ( fullPathToStatsFile ) {
         free ( fullPathToStatsFile );
