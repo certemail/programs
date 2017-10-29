@@ -307,15 +307,15 @@ int checkLoss(PGAME g)
 // reads HOME environment variable and concatenates it with filename
 int concatHomeDirAndFile(char **fullPath, const char *fileName)
 {
-    char *buf;
-    char *homeEnv; 
+    char *buf = NULL;
+    char *homeEnv = NULL; 
+    char *pathSep = "/";
+    int status = FAILURE;
     size_t homeEnvLen;
     size_t bufLen;
     size_t pathSepLen;
     size_t strLen; 
     size_t totalSize;
-    char *pathSep = "/";
-    int status = FAILURE;
     
     homeEnv = getenv("HOME");
     if ( homeEnv == NULL ) 
