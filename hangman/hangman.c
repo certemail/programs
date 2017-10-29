@@ -412,7 +412,7 @@ int main(int argc, char *argv[])
         // build full path to default word list in HOME directory
         if ( concatHomeDirAndFile( &fullPathToDefaultWordList, defaultWordFile) == FAILURE ) 
         {
-            fprintf( stderr, "%s\n", "FAILURE for concatHomeDirAndFile()" );
+            fprintf( stderr, "%s\n", "error getting path to word file" );
             goto Exit;
         }
         wordlist = fullPathToDefaultWordList;
@@ -421,7 +421,7 @@ int main(int argc, char *argv[])
     // select random word
     if (selectWord(wordlist, &randomWord) == FAILURE ) 
     {
-        fprintf( stderr, "%s\n", "FAILURE for selectWord()" );
+        fprintf( stderr, "%s\n", "error selecting word" );
         goto Exit;
     }
 
@@ -432,14 +432,14 @@ int main(int argc, char *argv[])
     // build full path to stats file in HOME directory
     if (concatHomeDirAndFile( &fullPathToStatsFile, defaultStatsFile ) == FAILURE )
     {
-        fprintf( stderr, "%s\n", "FAILURE for concatHomeDirAndFile()" );
+        fprintf( stderr, "%s\n", "error opening stats file" );
         goto Exit;
     }
     
     // read in stats from file
     if ( readStats(&hangmanStats, fullPathToStatsFile ) == FAILURE)
     {
-        fprintf( stderr, "%s\n", "FAILRE for readStats()");    
+        fprintf( stderr, "%s\n", "error reading stats file");    
         goto Exit;
     }
 
@@ -477,7 +477,7 @@ int main(int argc, char *argv[])
 	}
 	else 
         {
-            fprintf(stderr, "%s\n", "fgets failed to read from stdin");
+            fprintf(stderr, "%s\n", "failure to reading from stdin");
             goto Exit;
 	}
 	letterChoice = tempBuf[0];
