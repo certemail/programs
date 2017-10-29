@@ -379,10 +379,11 @@ int main(int argc, char *argv[])
     STATS           hangmanStats;
     const char      *defaultStatsFile = ".stats";   
     const char      *defaultWordFile = ".words";
-    char            *wordlist = NULL;              
+    const char      *wordlist = NULL;              
     char            *randomWord = NULL;
     char            *fullPathToDefaultWordList = NULL;
     char            *fullPathToStatsFile = NULL;
+    char            *otherWordList = NULL;
 
     if (argc > 2) {
         printf("%s%s%s\n", "usage: ", argv[0], " <path_to_word_list>");
@@ -393,17 +394,18 @@ int main(int argc, char *argv[])
     if ( argv[1] ) 
     {
         //wordlist = argv[1];    
-        wordlist = (char *)malloc( strlen (argv[1] + 1 ));
-        if ( wordlist != NULL )
+        otherWordList = (char *)malloc( strlen (argv[1] + 1 ));
+        if ( otherWordList != NULL )
         {
-            strcpy( wordlist, argv[1] );
-            wordlist[ strlen(argv[1]) ] = '\0';
+            strcpy( otherWordList, argv[1] );
+            otherWordList[ strlen(argv[1]) ] = '\0';
         } 
         else
         {
             fprintf( stderr, "%s\n", "malloc() failed" );
             goto Exit;
         }
+        wordlist = otherWordList;
     } 
     else 
     {
