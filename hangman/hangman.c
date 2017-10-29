@@ -6,16 +6,14 @@
 #include <errno.h>
 #include <limits.h>
 
-#define MAX_STATS            1000
-#define MAX_WORDS             100
-#define MAX_WORD_LEN           30 
-#define MAX_NUM_WRONG_GUESSES   5
-#define NUM_LINES_IN_STAT_FILE  3
+#define MAX_STATS               1000
+#define MAX_WORDS                100
+#define MAX_WORD_LEN              30 
+#define MAX_NUM_WRONG_GUESSES      5
+#define NUM_LINES_IN_STAT_FILE     3
 
-#define SUCCESS                  1
-#define FAILURE                  0 
-#define TRUE                     1
-#define FALSE                    0
+#define SUCCESS                    1
+#define FAILURE                    0 
 
 typedef struct statistics {
     int gameNumber;
@@ -266,7 +264,7 @@ void printGame(PGAME g)
 void updateGame(PGAME g, char * choice)
 {
     int i;
-    int didNotFindChoice = TRUE ;
+    int didNotFindChoice = 1 ;
 
     // check if choice appears in word
     for ( i = 0; i < strlen(g->word); i++)
@@ -275,7 +273,7 @@ void updateGame(PGAME g, char * choice)
 	if ( g->word[i] == *choice ) 
 	{
 	    g->line[i] = *choice;
-	    didNotFindChoice = FALSE;
+	    didNotFindChoice = 0;
 	} 
     }  
     if ( didNotFindChoice )
@@ -286,22 +284,22 @@ void updateGame(PGAME g, char * choice)
 
 int checkWin(PGAME g)
 {
-    int gameWon = FALSE;
+    int gameWon = 0;
     char c = '_';
 
     if ( ( g->numWrongGuess <=  5 ) &&  (! strchr(g->line, c) ) )
     {
-        gameWon = TRUE;
+        gameWon = 1;
     }
     return gameWon;
 }//-------------------------------end checkWin()
 
 int checkLoss(PGAME g)
 {
-    int gameLost = FALSE;
+    int gameLost = 0;
     if ( g->numWrongGuess > 5 ) 
     {
-	gameLost = TRUE;
+	gameLost = 1;
     }
     return gameLost;
 }//-------------------------------end checkLoss()
@@ -395,13 +393,24 @@ int main(int argc, char *argv[])
     if (argv[1]) 
     {
         wordlist = argv[1];    
+        //wordlist = (char *)malloc( strlen (argv[1] + 1 ));
+        //if ( wordlist != NULL )
+        //{
+        //    strcpy( wordlist, argv[1] );
+        //    wordlist[ strlen(argv[1]) ] = '\0';
+        //} 
+        //else
+        //{
+        //    fprintf( stderr, "%s\n", "malloc() failed" );
+        //    goto Exit;
+        //}
     } 
     else 
     {
         // build full path to default word list in HOME directory
         if ( concatHomeDirAndFile( &fullPathToDefaultWordList, defaultWordFile) == FAILURE ) 
         {
-            fprintf( stderr, "FAILURE for concatHomeDirAndFile()\n" );
+            fprintf( stderr, "%s\n", "FAILURE for concatHomeDirAndFile()" );
             goto Exit;
         }
         wordlist = fullPathToDefaultWordList;
@@ -410,7 +419,7 @@ int main(int argc, char *argv[])
     // select random word
     if (selectWord(wordlist, &randomWord) == FAILURE ) 
     {
-        fprintf( stderr, "FAILURE for selectWord()\n" );
+        fprintf( stderr, "%s\n", "FAILURE for selectWord()" );
         goto Exit;
     }
 
@@ -421,14 +430,14 @@ int main(int argc, char *argv[])
     // build full path to stats file in HOME directory
     if (concatHomeDirAndFile( &fullPathToStatsFile, defaultStatsFile ) == FAILURE )
     {
-        fprintf( stderr, "FAILURE for concatHomeDirAndFile()\n" );
+        fprintf( stderr, "%s\n", "FAILURE for concatHomeDirAndFile()" );
         goto Exit;
     }
     
     // read in stats from file
     if ( readStats(&hangmanStats, fullPathToStatsFile ) == FAILURE)
     {
-        fprintf(stderr, "%s\n", "error processing stats file. exiting...");    
+        fprintf( stderr, "%s\n", "FAILRE for readStats()");    
         goto Exit;
     }
 
@@ -493,11 +502,15 @@ int main(int argc, char *argv[])
     }
 
     hangmanStats.gameNumber++;
-    writeStats( &hangmanStats, defaultStatsFile );
+    writeStats( &hangmanStats, fullPathToStatsFile );
 
 Exit:
+    // free heap memory still in use
     if ( fullPathToDefaultWordList ) {
         free ( fullPathToDefaultWordList );
+    }
+    if ( fullPathToStatsFile ) {
+        free ( fullPathToStatsFile );
     }
 
     return 0;
