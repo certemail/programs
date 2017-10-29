@@ -187,7 +187,7 @@ int selectWord(const char *filepath, char **rWord)
     printf("%s%s\n", "OPENING FILE: ", filepath);
 #endif
     FILE *fp = NULL;
-    if ( ( fp = fopen( filepath, "r" )) == NULL )
+    if ( ( fp = fopen( filepath, "r" ) ) == NULL )
     {
         fprintf( stderr, "error opening file\n"); 
         return( FAILURE );
@@ -333,7 +333,7 @@ int concatHomeDirAndFile(char **fullPath, const char *fileName)
             fprintf( stderr, "%s\n", "malloc failed");
             goto Exit;
         }
-        // memcpy includes NULL terminator
+        // NULL terminator is included 
         memcpy( buf, homeEnv, homeEnvLen );
     }
 
@@ -447,9 +447,7 @@ int main(int argc, char *argv[])
     printf( "%s%s\n", "Using stats file: ", fullPathToStatsFile );
 
     displayStats(&hangmanStats);
-
     initializeGame(&hangmanGame, randomWord);
-
     printGame(&hangmanGame);
 
     while ( 1 ) 
@@ -480,9 +478,8 @@ int main(int argc, char *argv[])
             fprintf(stderr, "%s\n", "failure to reading from stdin");
             goto Exit;
 	}
-	letterChoice = tempBuf[0];
-
-        // TODO validate letterChoice is lower-case ASCII character
+        // cast to unsigned char (tolower expects an int)
+	letterChoice = tolower( (unsigned char)tempBuf[0] );
 
         updateGame(&hangmanGame, &letterChoice);
 
@@ -501,13 +498,13 @@ int main(int argc, char *argv[])
 	    break;
 	}
 	printGame(&hangmanGame);
-    }
+    } //---end while()
 
     hangmanStats.gameNumber++;
     writeStats( &hangmanStats, fullPathToStatsFile );
 
 Exit:
-    // free heap memory still in use
+    // free memory still in use
     if ( wordlist ) {
         free ( wordlist );
     }
