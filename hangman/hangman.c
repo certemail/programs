@@ -196,7 +196,6 @@ int selectWord(const char *filepath, char **rWord)
         return( FAILURE );
     }
     
-    
     while ( fgets(word, MAX_WORD_LEN, fp ) != NULL )
     {
         // remove newline
@@ -207,7 +206,6 @@ int selectWord(const char *filepath, char **rWord)
 #ifdef DEBUG
             printf("\t%s\n", word);
 #endif
-
         } 
 
         else 
@@ -217,6 +215,7 @@ int selectWord(const char *filepath, char **rWord)
         }
 
         // copy word into array
+        // word is already NULL terminated
         strncpy(wordList[numWords], word, MAX_WORD_LEN);
         numWords++;
     }
@@ -320,6 +319,53 @@ int main(int argc, char *argv[])
         printf("%s%s%s\n", "usage: ", argv[0], " <path_to_word_list>");
         exit( 1 );
     }
+
+    // **********  read HOME environment variable
+    char *buf;
+    char *home = getenv("HOME");
+    if ( home == NULL ) 
+    {
+        // HOME not set
+        fprintf(stderr, "%s\n", "HOME environment variable not set...exiting...");
+        exit(1);
+    } 
+    else 
+    {
+        size_t len = strlen(home) + 1 ;
+        buf = (char *)malloc(len);
+        if ( buf == NULL ) 
+        {
+            fprintf( stderr, "%s\n", "malloc failed");
+        }
+        // memcpy includes NULL terminator
+        memcpy( buf, home, len );
+
+        printf("%s%s\n", "home directory: ", buf );
+        printf("%s%ld\n", "strlen(buf)", strlen(buf) );
+    }
+    char *pathSep = "/";
+
+    size_t bufLen = strlen(buf);
+    size_t pathSepLen = strlen(pathSep);
+    size_t wordListLen = strlen(".words");
+
+    printf("bufLen: %ld\n", bufLen);
+    printf("pathSepLen: %ld\n", pathSepLen);
+    printf("wordListLen: %ld\n", wordListLen);
+    
+    printf("Total buffer size (excluding NULL): %ld\n", bufLen + pathSepLen + wordListLen);
+    size_t totalSize = bufLen + pathSepLen + wordListLen;
+    
+    char *fullPath = (char *)malloc(totalSize + 1);
+    if (fullPath == NULL)
+    {
+        fprintf(stderr, "%s\n", "malloc failed");
+        exit(1);
+    }
+    snprintf( fullPath, totalSize + 1, "%s%s%s", buf, pathSep, ".words" );
+    printf("FULLPATH: %s\n", fullPath);
+    // ************ end read HOME environment var
+
 
     if (argv[1]) 
     {
