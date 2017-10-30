@@ -28,6 +28,57 @@ typedef struct game {
     char line[MAX_WORD_LEN];
 } GAME, *PGAME;
 
+void displayHangman(int wrongGuesses)
+{
+    switch( wrongGuesses )
+    {
+        case 0:
+            printf("\n");
+            printf("\n");
+            break;
+
+        case 1:
+            printf("    O \n");
+            printf("\n");
+            break;
+
+        case 2:
+            printf("    O \n");
+            printf("    | \n");
+            printf("\n");
+            break;
+
+        case 3:
+            printf("    O \n");
+            printf("   /| \n");
+            printf("\n");
+            break; 
+
+        case 4:
+            printf("    O \n");
+            printf("   /|\\ \n");
+            printf("\n");
+            break;
+
+        case 5: 
+            printf("    O    \n");
+            printf("   /|\\  \n");
+            printf("   /     \n");
+            printf("\n");
+            break;
+
+        case 6:
+            printf("    O     \n");
+            printf("   /|\\   \n");
+            printf("   / \\   \n");
+            printf("\n");
+            break;
+
+        default:
+            fprintf( stderr, "%s\n", "error displaying hangman" );
+    }
+}
+
 int validateStats(char * buff, int *si)
 {
     int status = FAILURE;
@@ -256,6 +307,7 @@ void printGame(PGAME g)
     printf("%d ", g->numWrongGuess);
     printf("%s ", g->line);
     printf("%s", " : ");
+
     fflush(stdout);
 }//-------------------------------end printGame()
 
@@ -483,7 +535,8 @@ int main(int argc, char *argv[])
 
 	if ( checkLoss( &hangmanGame ) )
 	{
-	    printf("%s\n", "GAME LOST");
+            displayHangman( hangmanGame.numWrongGuess);
+	    printf("%s\n", "GAME LOST!!");
 	    printf("%s%s\n", "WORD: ", hangmanGame.word);
             hangmanStats.losses++;
 	    break;
@@ -495,6 +548,9 @@ int main(int argc, char *argv[])
             hangmanStats.wins++;
 	    break;
 	}
+
+        displayHangman(hangmanGame.numWrongGuess);
+
 	printGame(&hangmanGame);
     } //---end while()
 
