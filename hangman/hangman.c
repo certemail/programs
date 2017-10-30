@@ -27,7 +27,6 @@ typedef struct game {
     char line[MAX_WORD_LEN];
 } GAME, *PGAME;
 
-
 int validateStats(char * buff, int *si)
 {
     int status = FAILURE;
@@ -173,8 +172,6 @@ Exit:
 
 int selectWord(const char *filepath, char **rWord)
 {
-    // TODO validate words are properly formed
-
     srand(time(NULL));
 
     char word[MAX_WORD_LEN];
@@ -182,10 +179,12 @@ int selectWord(const char *filepath, char **rWord)
     char *p = NULL;
     int numWords = 0;
     int randomIdx = 0;
+    int i;
 
 #ifdef DEBUG
     printf("%s%s\n", "OPENING FILE: ", filepath);
 #endif
+
     FILE *fp = NULL;
     if ( ( fp = fopen( filepath, "r" ) ) == NULL )
     {
@@ -204,27 +203,25 @@ int selectWord(const char *filepath, char **rWord)
             printf("\t%s\n", word);
 #endif
         } 
-
         else 
         {
             fprintf( stderr, "%s%s%s%zu\n", "word length exceed max word length: ", word, " | strlen(word): ", strlen(word));
             continue;
         }
 
+        // convert to lower case
+        for ( i = 0; word[i]; i++ )
+        {
+            word[i] = tolower( (unsigned char)word[i] );
+        }
+#ifdef DEBUG
+        printf("word tolower: %s\n", word);
+#endif
         // copy word into array
         // word is already NULL terminated
         strncpy(wordList[numWords], word, MAX_WORD_LEN);
         numWords++;
     }
-#ifdef DEBUG
-    printf("%s\n", "--------------------");
-    printf("%s%d\n", "number of words in list: ", numWords);
-    int i;
-    for ( i = 0; i < numWords; i++ )
-    {
-        printf("%s\n", wordList[i]);
-    } 
-#endif
 
     // randomly select word in wordList
     randomIdx = rand() % numWords; 
