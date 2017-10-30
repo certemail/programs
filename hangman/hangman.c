@@ -5,6 +5,7 @@
 #include <time.h>
 #include <errno.h>
 #include <limits.h>
+#include <ctype.h>
 
 #define MAX_STATS               1000
 #define MAX_WORDS                100
