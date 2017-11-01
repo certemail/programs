@@ -8,7 +8,7 @@ LIBS=
 SRCS=$(shell find . -maxdepth 1 -name '*.c')
 
 OBJS=${SRCS:.c=.o}
-TARGET=${OBJS:.o=}
+TARGET=ws
 
 all:    clean ${TARGET}
 
