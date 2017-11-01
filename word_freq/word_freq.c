@@ -70,11 +70,19 @@ void add_word(char *w)
     wptr = word_list;
     end  = word_list + MAX_WORDS;
 
-
     while ( ( wptr < end ) && ( *wptr != NULL ) )
     {
+        if ( strcmp( (*wptr)->word, w ) == 0 )
+        {
+            // word is already in the word_list
+            printf("%s%s\n", (*wptr)->word,  " already exists in list" );
+            (*wptr)->count++;
+            
+            return;
+        }
         wptr++;    
     }
+
     // word has not been added yet
 
     // allocate space for new WORD struct
@@ -93,6 +101,7 @@ void add_word(char *w)
     printf("just added: %s\n", (*wptr)->word);
     printf("count is now: %d\n\n", (*wptr)->count);
 
+    return;
 }
 
 void process_file( const char * filename )
