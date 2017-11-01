@@ -5,8 +5,6 @@
 
 #define MAX_WORDS  1000
 #define LINE_SIZE   500
-#define FAILURE      0
-#define SUCCESS      1
 
 typedef struct _word {
     char *word;
@@ -15,8 +13,10 @@ typedef struct _word {
 
 PWORD word_list[MAX_WORDS];
 
+
 char * remove_newline(char *line)
 {
+    //returns NULL if newline not found
     char *p = strchr(line, '\n');
     if( p )
     {
@@ -44,22 +44,8 @@ void print_word_list()
    int i;
    for ( i = 0; i < MAX_WORDS && word_list[i] != NULL; i++ )
    {
-        printf( "%s %s %d\n", word_list[i]->word, " count: ", word_list[i]->count );
+        printf( "%d %s\n", word_list[i]->count, word_list[i]->word);
    }
-    //PWORD *wptr;
-    //PWORD *end;
-
-    //wptr = word_list;
-    //end  = word_list + MAX_WORDS;
-
-    //printf("printing word_list: \n");
-
-    //while ( ( *wptr < *end ) && ( *wptr != NULL ) )
-    //{
-    //    printf("%s ", (*wptr)->word);
-    //    printf(" %d ", (*wptr)->count);
-    //    wptr++;    
-    //}
 }
 
 void add_word(char *w)
@@ -91,9 +77,11 @@ void add_word(char *w)
     // zero out new memory allocated
     memset( *wptr, '\0', sizeof(WORD) );
 
-    // add word
+    // add word 
     (*wptr)->word = (char *)malloc( strlen(w) + 1 );
-    strcpy( (*wptr)->word, w);
+    
+    //sufficient space for NULL terminator
+    strcpy( (*wptr)->word, w );
 
     // update count
     (*wptr)->count++;
@@ -135,28 +123,54 @@ void process_file( const char * filename )
         // NULL terminator space included
         strcpy(copy, line);
 
+        // get first token in line
         token = strtok(copy, delims);
 
         // sanitize (convert to lowercase, check for non-alpa chars)
         sanitize_token(token);
     
-        // add word to word_list
+        // add first token to word_list
         add_word(token);
 
-        //puts(token); 
-
+        // get subsequent tokens
         while( (token = strtok(NULL, delims) ) ) {
-            //puts(token);
+            sanitize_token(token);
             add_word(token);
         }
-        free(copy);
+        free( copy );
         copy = NULL;
     }
     printf("\n"); 
 
 Exit:
     if ( fp ) {
-        fclose(fp);
+        fclose( fp) ;
+    }
+}
+
+void free_word_list()
+{
+    PWORD *wptr;
+    PWORD *end;
+
+    wptr = word_list;
+    end  = word_list + MAX_WORDS;
+
+    printf("\nfreeing memory...\n");
+    while ( ( wptr < end ) && ( *wptr != NULL ) )
+    {
+        // free memory for wptr->word
+        if ( (*wptr)->word != NULL ) 
+        {
+            free( (*wptr)->word );
+        }
+
+        // free memory for WORD structure
+        if ( (*wptr) != NULL )
+        {
+            free( *wptr );
+        }
+        wptr++;    
     }
 }
 
@@ -168,6 +182,7 @@ int main(int argc, char *argv[])
     if ( argc < 2 ) 
     {
         printf( "usage: <prog> <filename>\n" );
+        exit(1);
     } 
     else 
     {
@@ -182,4 +197,7 @@ int main(int argc, char *argv[])
     }
     print_word_list();
 
+    free_word_list();
+
+    return 0;
 }
