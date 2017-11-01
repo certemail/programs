@@ -40,20 +40,26 @@ void sanitize_token(char * token)
 
 void print_word_list()
 {
-    PWORD *wptr;
-    PWORD *end;
+   printf("%s\n", "printing list:");
+   int i;
+   for ( i = 0; i < MAX_WORDS && word_list[i] != NULL; i++ )
+   {
+        printf( "%s %s %d\n", word_list[i]->word, " count: ", word_list[i]->count );
+   }
+    //PWORD *wptr;
+    //PWORD *end;
 
-    wptr = word_list;
-    end  = word_list + MAX_WORDS;
+    //wptr = word_list;
+    //end  = word_list + MAX_WORDS;
 
-    printf("printing word_list: \n");
+    //printf("printing word_list: \n");
 
-    while ( ( *wptr < *end ) && ( *wptr != NULL ) )
-    {
-        printf("%s ", (*wptr)->word);
-        printf(" %d ", (*wptr)->count);
-        wptr++;    
-    }
+    //while ( ( *wptr < *end ) && ( *wptr != NULL ) )
+    //{
+    //    printf("%s ", (*wptr)->word);
+    //    printf(" %d ", (*wptr)->count);
+    //    wptr++;    
+    //}
 }
 
 void add_word(char *w)
@@ -65,13 +71,10 @@ void add_word(char *w)
     end  = word_list + MAX_WORDS;
 
 
-    while ( ( *wptr < *end ) && ( *wptr != NULL ) )
+    while ( ( wptr < end ) && ( *wptr != NULL ) )
     {
-        // strcmp to see if word has already been added
-        
         wptr++;    
     }
-
     // word has not been added yet
 
     // allocate space for new WORD struct
