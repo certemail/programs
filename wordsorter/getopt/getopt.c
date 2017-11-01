@@ -14,7 +14,7 @@ typedef struct global_args {
     int print_only_unique_words;        // -u
     int print_help_menu;                // -h
     int num_input_files;                // number of files specified on cmd line
-    char **inputFiles;                  // input files
+    char **input_files;                  // input files
 } CMD_LINE_ARGS;
 
 
@@ -36,6 +36,7 @@ int main(int argc, char **argv)
 
     CMD_LINE_ARGS cmd_args;
 
+    // initialize cmd line args
     cmd_args.c_num_sorted_words = NULL;          // -c <num> as string
     cmd_args.num_sorted_words = 0;               // -c <num>
     cmd_args.reverse = 0;                        // -r
@@ -46,10 +47,9 @@ int main(int argc, char **argv)
     cmd_args.print_only_unique_words = 0;        // -u
     cmd_args.print_help_menu = 0;                // -h
     cmd_args.num_input_files = 0;                // number of files specified on cmd line
-    cmd_args.inputFiles = NULL;                  // input files
+    cmd_args.input_files = NULL;                  // input files
 
     int c;
-
     opterr = 0;
 
     while ( ( c = getopt( argc, argv, "c:rnlsauh") ) != -1 )
@@ -106,33 +106,44 @@ int main(int argc, char **argv)
             // default case
             default:
                 exit (1);
-        }
-    }
 
-#ifdef DEBUG
-     printf( "%s%d\n", "c_flag: ", c_flag );
-     printf( "%s%s\n", "c_value: ", c_value );
-     printf( "%s%d\n", "r_flag: ", r_flag );
-     printf( "%s%d\n", "n_flag: ", n_flag );
-     printf( "%s%d\n", "l_flag: ", l_flag );
-     printf( "%s%d\n", "s_flag: ", s_flag );
-     printf( "%s%d\n", "a_flag: ", a_flag ); 
-     printf( "%s%d\n", "u_flag: ", u_flag );
-     printf( "%s%d\n", "h_flag: ", h_flag );
-#endif
+        } // end switch
+
+    } // end while
+
+
+    
+    printf("%s\n", "***parsing command line options:");
 
     // [ -h ] display help menu
     if ( cmd_args.print_help_menu ) {
         display_usage();
+        exit(1);
     }
 
     // [ -c ] print only first n results of sorted list
     else if ( cmd_args.c_num_sorted_words )
     {
-        printf("cmd_args.c_value: %s\n", cmd_args.c_num_sorted_words );
         cmd_args.num_sorted_words = atoi(cmd_args.c_num_sorted_words);
-        printf("cmd_args.num_sorted_words: %d\n", cmd_args.num_sorted_words );
+        printf("number of sorted words to display: %d\n", cmd_args.num_sorted_words );
     }
+
+
+    // get filenames to sort
+    printf("\n%s\n", "***parsing command line arguments:");
+    if (optind < argc)
+    {
+        for (; optind < argc; optind++){
+            printf("processing file: %s\n", argv[optind]);
+            // TODO call sorting_functions...
+        }
+    } 
+    else 
+    {
+        printf("no filenames provided, reading from stdin:\n");
+            // TODO read words from stdin and pass to sorting functions... 
+    }
+
         
     return 0;
 }
