@@ -23,7 +23,7 @@ char * remove_newline(char *line)
         *p = '\0';
     }
     return p;
-}
+} //----------------end remove_newline()
 
 void sanitize_token(char * token)
 {
@@ -33,10 +33,7 @@ void sanitize_token(char * token)
     {
         token[i] = tolower(token[i]);
     }
-
-    // TODO remove non-alphanumeric chars
-
-}
+}//----------------end sanitize_token()
 
 void print_word_list()
 {
@@ -46,7 +43,7 @@ void print_word_list()
    {
         printf( "%d %s\n", word_list[i]->count, word_list[i]->word);
    }
-}
+}//----------------end print_word_list()
 
 void add_word(char *w)
 {
@@ -61,7 +58,7 @@ void add_word(char *w)
         if ( strcmp( (*wptr)->word, w ) == 0 )
         {
             // word is already in the word_list
-            printf("%s%s\n", (*wptr)->word,  " already exists in list" );
+            printf("%s%s\n\n", (*wptr)->word,  " already exists in list" );
             (*wptr)->count++;
             
             return;
@@ -90,7 +87,7 @@ void add_word(char *w)
     printf("count is now: %d\n\n", (*wptr)->count);
 
     return;
-}
+}//----------------end add_word()
 
 void process_file( const char * filename )
 {
@@ -99,7 +96,7 @@ void process_file( const char * filename )
     char line[LINE_SIZE]; 
     const char *delims = " ?;!,\n\t\\";
 
-    printf("processing: %s\n", filename);
+    printf("***processing: %s\n", filename);
     
     if (  ( fp = fopen( filename, "r" ) )   == NULL )
     {
@@ -146,7 +143,7 @@ Exit:
     if ( fp ) {
         fclose( fp) ;
     }
-}
+}//----------------end process_file()
 
 void free_word_list()
 {
@@ -156,7 +153,6 @@ void free_word_list()
     wptr = word_list;
     end  = word_list + MAX_WORDS;
 
-    printf("\nfreeing memory...\n");
     while ( ( wptr < end ) && ( *wptr != NULL ) )
     {
         // free memory for wptr->word
@@ -172,7 +168,38 @@ void free_word_list()
         }
         wptr++;    
     }
-}
+}//----------------end free_word()
+
+int sorting_func(const void *left, const void *right)
+{
+    PWORD l =  *((PWORD *)left);  // 
+    PWORD r =  *((PWORD *)right); // TODO r does not get set correctly here, why ??
+
+    return ( strcmp( l->word, r->word ) );
+}//----------------end sorting_func()
+
+void sort_word_list()
+{
+    // find number of elements
+    PWORD *wptr;
+    PWORD *end;
+    size_t num_items = 0;
+
+    wptr = word_list;
+    end  = word_list + MAX_WORDS;
+
+    while ( ( wptr < end ) && ( *wptr != NULL ) )
+    {
+        wptr++;    
+        num_items++;
+    }
+    printf("number of items: %ld\n", num_items);
+
+    qsort( word_list, sizeof(PWORD), num_items, sorting_func );
+
+    printf("sorting complete\n");
+}//----------------end sort_word_list()
+
 
 int main(int argc, char *argv[])
 {
@@ -195,9 +222,11 @@ int main(int argc, char *argv[])
             idx--;
         }
     }
+    //sort_word_list();
+
     print_word_list();
 
     free_word_list();
 
     return 0;
-}
+}//----------------end main()
