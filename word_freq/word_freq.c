@@ -175,6 +175,19 @@ int sorting_func(const void *left, const void *right)
     PWORD l =  *((PWORD *)left);  // 
     PWORD r =  *((PWORD *)right); // TODO r does not get set correctly here, why ??
 
+#ifdef DEBUG
+    printf("%s\n", "in qsort comparison function...");
+    printf("%s ", "l->word: ");
+    fflush(stdout);
+    printf("%s\n", l->word);
+    fflush(stdout);
+
+    printf("%s ", "r->word: ");
+    fflush(stdout);
+    printf("%s\n", r->word);
+    fflush(stdout);
+#endif
+
     return ( strcmp( l->word, r->word ) );
 }//----------------end sorting_func()
 
@@ -222,7 +235,7 @@ int main(int argc, char *argv[])
             idx--;
         }
     }
-    //sort_word_list();
+    sort_word_list();
 
     print_word_list();
 
