@@ -223,28 +223,8 @@ void free_word_list()
     }
 }//----------------end free_word()
 
-int sorting_func(const void *left, const void *right)
-{
-    PWORD l =  *((PWORD *)left);  // 
-    PWORD r =  *((PWORD *)right); // TODO r does not get set correctly here, why ??
 
-#ifdef DEBUG
-    printf("%s\n", "in qsort comparison function...");
-    printf("%s ", "l->word: ");
-    fflush(stdout);
-    printf("%s\n", l->word);
-    fflush(stdout);
-
-    printf("%s ", "r->word: ");
-    fflush(stdout);
-    printf("%s\n", r->word);
-    fflush(stdout);
-#endif
-
-    return ( strcmp( l->word, r->word ) );
-}//----------------end sorting_func()
-
-void sort_word_list()
+size_t get_num_words()
 {
     // find number of elements
     PWORD *wptr;
@@ -259,9 +239,64 @@ void sort_word_list()
         wptr++;    
         num_items++;
     }
-    printf("number of items: %ld\n", num_items);
+#ifdef DEBUG
+    printf("number of words in list: %ld\n", num_items);
+#endif
 
-    qsort( word_list, num_items, sizeof(PWORD), sorting_func );
+    return num_items;
+}
+
+int sort_lexicographically(const void *left, const void *right)
+{
+    PWORD l =  *((PWORD *)left);  
+    PWORD r =  *((PWORD *)right); 
+
+    return ( strcmp( l->word, r->word ) );
+}//----------------end sort_lexicographically()
+
+int sort_lexicographically_reverse(const void *left, const void *right)
+{
+    PWORD l =  *((PWORD *)left);  
+    PWORD r =  *((PWORD *)right); 
+
+    return ( strcmp( r->word, l->word ) );
+}//----------------end sort_lexicographically_reverse()
+
+
+int sort_word_length(const void *left, const void *right)
+{
+    PWORD l =  *((PWORD *)left);  
+    PWORD r =  *((PWORD *)right); 
+
+    int l_len = strlen( l->word );
+    int r_len = strlen( r->word );
+
+    return ( l_len - r_len  );
+}//----------------end sort_word_length()
+
+int sort_word_length_reverse(const void *left, const void *right)
+{
+    PWORD l =  *((PWORD *)left);  
+    PWORD r =  *((PWORD *)right); 
+
+    int l_len = strlen( l->word );
+    int r_len = strlen( r->word );
+
+    return ( r_len - l_len  );
+}//----------------end sort_word_length_reverse()
+
+void sort_word_list()
+{
+    size_t num_items;
+    num_items = get_num_words();
+
+    qsort( word_list, num_items, sizeof(PWORD), sort_lexicographically );
+
+    // TODO case switch statement to call appropriate sorting func
+
+    //qsort( word_list, num_items, sizeof(PWORD), sort_lexicographically_reverse );
+    //qsort( word_list, num_items, sizeof(PWORD), sort_word_length );
+    //qsort( word_list, num_items, sizeof(PWORD), sort_word_length_reverse );
 
     printf("sorting complete\n");
 }//----------------end sort_word_list()
