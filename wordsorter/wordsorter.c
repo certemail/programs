@@ -70,12 +70,23 @@ void add_word(char *w)
 
     // allocate space for new WORD struct
     *wptr = (PWORD)malloc( sizeof(WORD) );
+    if(  *wptr == NULL ) 
+    {
+        fprintf( stderr, "%s%d%s\n", __FILE__, __LINE__, " : malloc failed()" );
+        abort();
+    }
 
     // zero out new memory allocated
     memset( *wptr, '\0', sizeof(WORD) );
 
     // add word 
     (*wptr)->word = (char *)malloc( strlen(w) + 1 );
+    if ( (*wptr)->word == NULL )
+    {
+        fprintf( stderr, "%s%d%s\n", __FILE__, __LINE__, " : malloc failed()" );
+        abort();
+    }
+
     
     //sufficient space for NULL terminator
     strcpy( (*wptr)->word, w );
@@ -95,8 +106,10 @@ void process_line( char *line )
     const char *delims = " .?;!,\n\t\\";
 
     char *copy = (char *)malloc( strlen( line ) + 1);
-    if (copy == NULL) {
-        return;
+    if ( copy == NULL ) 
+    {
+        fprintf( stderr, "%s%d%s\n", __FILE__, __LINE__, " : malloc failed()" );
+        abort();
     }
 
     // NULL terminator space included
@@ -112,7 +125,8 @@ void process_line( char *line )
     add_word( token );
 
     // get subsequent tokens
-    while( (token = strtok(NULL, delims) ) ) {
+    while( (token = strtok(NULL, delims) ) ) 
+    {
         sanitize_token(token);
         add_word(token);
     }
@@ -120,7 +134,7 @@ void process_line( char *line )
     copy = NULL;
     
     return;
-}
+}//----------------end process_line() 
 
 void process_from_stdin()
 {
@@ -151,14 +165,12 @@ void process_from_stdin()
     }
 
     process_line( buffer );
-}
+}//----------------end process_from_stdin()
 
 void process_file( const char * filename )
 {
     FILE *fp;
-    char *token;
     char line[LINE_SIZE]; 
-    const char *delims = " .?;!,\n\t\\";
 
     printf("***processing: %s\n", filename);
     
@@ -172,38 +184,15 @@ void process_file( const char * filename )
     while ( ( fgets( line, sizeof(line), fp ) != NULL ) )
     {
         // remove newline to check if buffer exceeded
-        if ( remove_newline(line) == NULL ) {
+        if ( remove_newline(line) == NULL ) 
+        {
             fprintf(stderr, "%s%d\n", "LINE EXCEEDED", LINE_SIZE);
         }
-
-        char *copy = (char *)malloc(strlen(line) + 1);
-        if (copy == NULL) {
-            goto Exit;
-        }
-
-        // NULL terminator space included
-        strcpy(copy, line);
-
-        // get first token in line
-        token = strtok(copy, delims);
-
-        // sanitize (convert to lowercase, check for non-alpa chars)
-        sanitize_token(token);
-    
-        // add first token to word_list
-        add_word(token);
-
-        // get subsequent tokens
-        while( (token = strtok(NULL, delims) ) ) {
-            sanitize_token(token);
-            add_word(token);
-        }
-        free( copy );
-        copy = NULL;
+        process_line( line );
     }
-    printf("\n"); 
 
 Exit:
+    // close file pointer
     if ( fp ) {
         fclose( fp) ;
     }
