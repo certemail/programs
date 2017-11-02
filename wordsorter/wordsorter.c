@@ -26,9 +26,9 @@ void sanitize_token(char * token)
     }
 }//----------------end sanitize_token()
 
-void print_word_list( int num_items_to_print )
+void print_word_list( int num_items_to_print, int unique )
 {
-   int i;
+    int i;
 
     // num_items_to_print not specified - print all
     if ( num_items_to_print <= 0 )
@@ -36,9 +36,32 @@ void print_word_list( int num_items_to_print )
         num_items_to_print = MAX_WORDS;    
     }
     
-    for ( i = 0; i < num_items_to_print && word_list[i] != NULL; i++ )
+    // print only unique words
+    if ( unique )
     {
-         printf( "%d %s\n", word_list[i]->count, word_list[i]->word);
+        PWORD *wptr;
+        PWORD *end;
+
+        wptr = word_list;
+        end  = word_list + MAX_WORDS;
+
+        while ( ( wptr < end ) && ( *wptr != NULL ) && ( i < num_items_to_print )  )
+        {
+            if ( (*wptr)->count == 1 )
+            {
+                printf( "%d %s\n", (*wptr)->count, (*wptr)->word );
+                i++;
+            }
+            wptr++;
+        }
+    }
+    else
+    {
+        // print all words
+        for ( i = 0; i < num_items_to_print && word_list[i] != NULL; i++ )
+        {
+             printf( "%d %s\n", word_list[i]->count, word_list[i]->word);
+        }
     }
 }//----------------end print_word_list()
 

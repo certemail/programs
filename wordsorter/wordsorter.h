@@ -18,11 +18,11 @@ typedef struct _word {
 
 PWORD word_list[MAX_WORDS];
 
-char * remove_newline(char *line);
+char * remove_newline( char *line );
 
-void sanitize_token(char * token);
+void sanitize_token( char * token );
 
-void print_word_list( int num_items_to_print );
+void print_word_list( int num_items_to_print, int unique );
 
 void add_word(char *w);
 
