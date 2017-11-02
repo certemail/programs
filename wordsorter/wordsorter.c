@@ -35,14 +35,20 @@ void sanitize_token(char * token)
     }
 }//----------------end sanitize_token()
 
-void print_word_list()
+void print_word_list( int num_items_to_print )
 {
-   printf("%s\n", "printing list:");
    int i;
-   for ( i = 0; i < MAX_WORDS && word_list[i] != NULL; i++ )
-   {
-        printf( "%d %s\n", word_list[i]->count, word_list[i]->word);
-   }
+
+    // num_items_to_print not specified - print all
+    if ( num_items_to_print <= 0 )
+    {
+        num_items_to_print = MAX_WORDS;    
+    }
+    
+    for ( i = 0; i < num_items_to_print && word_list[i] != NULL; i++ )
+    {
+         printf( "%d %s\n", word_list[i]->count, word_list[i]->word);
+    }
 }//----------------end print_word_list()
 
 void add_word(char *w)

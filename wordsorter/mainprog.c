@@ -20,15 +20,15 @@ typedef struct global_args {
 
 void display_usage()
 {
-    printf("usage: %s\n", "<prog>");
+    printf("usage: %s", "<prog>");
     printf("\t%s\n", "-c <number_first_results_to_print>");
-    printf("\t%s\n", "-r print in reverse order");
-    printf("\t%s\n", "-n sort words as if numbers");
-    printf("\t%s\n", "-l sort words by length");
-    printf("\t%s\n", "-s sorts by scrabble score");
-    printf("\t%s\n", "-a sorts lexicographically");
-    printf("\t%s\n", "-u print only unique words");
-    printf("\t%s\n", "-h help menu");
+    printf("\t\t%s\n", "-r print in reverse order");
+    printf("\t\t%s\n", "-n sort words as if numbers");
+    printf("\t\t%s\n", "-l sort words by length");
+    printf("\t\t%s\n", "-s sorts by scrabble score");
+    printf("\t\t%s\n", "-a sorts lexicographically");
+    printf("\t\t%s\n", "-u print only unique words");
+    printf("\t\t%s\n", "-h help menu");
 }
 
 int main(int argc, char **argv)
@@ -61,7 +61,8 @@ int main(int argc, char **argv)
                 break;
 
             case 'r':
-                cmd_args.reverse = 1;
+                // XOR with 1 to turn off if even number of reverse options specified
+                cmd_args.reverse ^= 1;
                 break;
 
            case 'n':
@@ -92,14 +93,17 @@ int main(int argc, char **argv)
                 if (optopt == 'c') 
                 {
                     fprintf( stderr, "option -%c requires an argument.\n", optopt );
+                    display_usage();
                 }
                 else if ( isprint ( optopt ) )
                 {
                     fprintf( stderr, "unknown option -%c\n", optopt );
+                    display_usage();
                 }
                 else
                 {
                     fprintf( stderr, "unknown option character: %x\n", optopt );
+                    display_usage();
                 }
                 exit(1);
 
@@ -118,15 +122,24 @@ int main(int argc, char **argv)
     // [ -h ] display help menu
     if ( cmd_args.print_help_menu ) {
         display_usage();
-        exit(1);
+        exit( EXIT_SUCCESS );
     }
 
     // [ -c ] print only first n results of sorted list
     else if ( cmd_args.c_num_sorted_words )
     {
+        // convert to integer
         cmd_args.num_sorted_words = atoi(cmd_args.c_num_sorted_words);
         printf("number of sorted words to display: %d\n", cmd_args.num_sorted_words );
     }
+
+    // [ -r ] sort in reverse order
+    if ( cmd_args.reverse )
+    {
+        printf("reverse: %d\n", cmd_args.reverse );
+    }
+
+
 
 
     // get filenames to sort
@@ -145,10 +158,11 @@ int main(int argc, char **argv)
             process_from_stdin();
     }
 
+    
 
     sort_word_list();
 
-    print_word_list();
+    print_word_list( cmd_args.num_sorted_words );
 
     free_word_list();
         
