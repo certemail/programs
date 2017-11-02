@@ -2,16 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-
-#define MAX_WORDS  1000
-#define LINE_SIZE   500
-
-typedef struct _word {
-    char *word;
-    int count;
-} WORD, *PWORD;
-
-PWORD word_list[MAX_WORDS];
+#include "wordsorter.h"
 
 
 char * remove_newline(char *line)
@@ -296,12 +287,25 @@ void sort_word_list( int reverse, int sorting_algorithm )
     size_t num_items;
     num_items = get_num_words();
 
+    // sort descending
     if ( reverse )
     {
         switch( sorting_algorithm )
         {
-            case 0:
+            case SORT_LEX:
                 qsort( word_list, num_items, sizeof(PWORD), sort_lexicographically_reverse );
+                break;
+        
+            case SORT_LENGTH:
+                qsort( word_list, num_items, sizeof(PWORD), sort_word_length_reverse );
+                break;
+                
+            case SORT_SCRABBLE:
+                // TODO
+                break;
+
+            case SORT_AS_NUMBERS:
+                // TODO
                 break;
 
             default:
@@ -310,22 +314,30 @@ void sort_word_list( int reverse, int sorting_algorithm )
 
     }
 
+    // sort ascending
     else
     {
         switch( sorting_algorithm )
         {
-            case 0:
+            case SORT_LEX:
                 qsort( word_list, num_items, sizeof(PWORD), sort_lexicographically );
                 break;
 
+            case SORT_LENGTH:
+                qsort( word_list, num_items, sizeof(PWORD), sort_word_length);
+                break;
+        
+            case SORT_SCRABBLE:
+                // TODO
+                break;
+
+            case SORT_AS_NUMBERS:
+                // TODO
+                break;
+                
             default:
                 fprintf( stderr, "%s\n", "algorithm unknown" );
-                
-
         }
-
-
-
     }
 
 

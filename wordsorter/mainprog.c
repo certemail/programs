@@ -2,11 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <ctype.h>
-
-#define SORT_LEX            0
-#define SORT_LENGTH         1
-#define SORT_SCRABBLE       2
-#define SORT_AS_NUMBERS     3
+#include "wordsorter.h"
 
 typedef struct global_args {
     char *c_num_sorted_words;           // -c <num> as string
