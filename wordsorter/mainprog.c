@@ -36,6 +36,9 @@ int main(int argc, char **argv)
 {
 
     CMD_LINE_ARGS cmd_args;
+    int c;
+    int sorting_algorithm;
+    opterr = 0;
 
     // initialize cmd line args
     cmd_args.c_num_sorted_words = NULL;          // -c <num> as string
@@ -44,14 +47,11 @@ int main(int argc, char **argv)
     cmd_args.sort_words_as_numbers = 0;          // -n
     cmd_args.sort_words_by_length = 0;           // -l
     cmd_args.sort_words_by_scrabble_score  = 0;  // -s
-    cmd_args.sort_words_lexicographically = 0;   // -a
+    cmd_args.sort_words_lexicographically = 1;   // -a (default)
     cmd_args.print_only_unique_words = 0;        // -u
     cmd_args.print_help_menu = 0;                // -h
     cmd_args.num_input_files = 0;                // number of files specified on cmd line
-    cmd_args.input_files = NULL;                  // input files
-
-    int c;
-    opterr = 0;
+    cmd_args.input_files = NULL;                 // input files
 
     while ( ( c = getopt( argc, argv, "c:rnlsauh") ) != -1 )
     {
@@ -68,18 +68,38 @@ int main(int argc, char **argv)
 
            case 'n':
                 cmd_args.sort_words_as_numbers = 1;
+
+                // turn off others if this is the last option specified
+                cmd_args.sort_words_by_length = 0;
+                cmd_args.sort_words_by_scrabble_score = 0;
+                cmd_args.sort_words_lexicographically = 0;
                 break;
 
             case 'l':
                 cmd_args.sort_words_by_length = 1;
+
+                // turn off others if this is the last option specified
+                cmd_args.sort_words_as_numbers = 0;
+                cmd_args.sort_words_by_scrabble_score = 0;
+                cmd_args.sort_words_lexicographically = 0;
                 break;
 
             case 's':
                 cmd_args.sort_words_by_scrabble_score = 1;
+
+                // turn off others if this is the last option specified
+                cmd_args.sort_words_as_numbers = 0;
+                cmd_args.sort_words_by_length = 0;
+                cmd_args.sort_words_lexicographically = 0;
                 break;
 
             case 'a':
                 cmd_args.sort_words_lexicographically = 1;
+
+                // turn off others if this is the last option specified
+                cmd_args.sort_words_as_numbers = 0;
+                cmd_args.sort_words_by_length = 0;
+                cmd_args.sort_words_by_scrabble_score = 0;
                 break;
 
             case 'u':
@@ -88,6 +108,8 @@ int main(int argc, char **argv)
 
             case 'h':
                 cmd_args.print_help_menu = 1;
+                display_usage();
+                exit( EXIT_SUCCESS );
                 break;
 
             case '?':
@@ -117,47 +139,16 @@ int main(int argc, char **argv)
     } // end while
 
 
-    
-#ifdef DEBUG
-    printf("%s\n", "***parsing command line options:");
-#endif
-
-    // [ -h ] display help menu
-    if ( cmd_args.print_help_menu ) {
-        display_usage();
-        exit( EXIT_SUCCESS );
-    }
-
-    // [ -c ] print only first n results of sorted list
-    else if ( cmd_args.c_num_sorted_words )
-    {
-        // convert to integer
-        cmd_args.num_sorted_words = atoi(cmd_args.c_num_sorted_words);
-#ifdef DEBUG
-        printf("number of sorted words to display: %d\n", cmd_args.num_sorted_words );
-#endif
-    }
-
-    // [ -r ] sort in reverse order
-    if ( cmd_args.reverse )
-    {
-#ifdef DEBUG
-        printf("reverse: %d\n", cmd_args.reverse );
-#endif
-    }
 
 
-
-
-#ifdef DEBUG
-    printf("\n%s\n", "***parsing command line arguments:");
-#endif
     // get filenames to sort
     if (optind < argc)
     {
         for (; optind < argc; optind++){
-            printf("processing file: %s\n", argv[optind]);
 
+#ifdef DEBUG
+            printf("processing file: %s\n", argv[optind]);
+#endif
             process_file(argv[optind]);
         }
     } 
@@ -167,14 +158,36 @@ int main(int argc, char **argv)
             process_from_stdin();
     }
 
+
+    // [ -c ] print only first n results of sorted list
+    if ( cmd_args.c_num_sorted_words )
+    {
+        // convert to integer
+        cmd_args.num_sorted_words = atoi(cmd_args.c_num_sorted_words);
+    }
+
+#ifdef DEBUG
+    printf("-n: %d\n", cmd_args.sort_words_as_numbers );
+    printf("-l: %d\n", cmd_args.sort_words_by_length  );
+    printf("-s: %d\n", cmd_args.sort_words_by_scrabble_score );
+    printf("-a: %d\n", cmd_args.sort_words_lexicographically );
+#endif
+        
+    // default
+    sorting_algorithm = SORT_LEX;
+
+    if ( cmd_args.sort_words_as_numbers ) { 
+        sorting_algorithm = SORT_AS_NUMBERS; 
+    }
+    else if ( cmd_args.sort_words_by_length ) { 
+        sorting_algorithm = SORT_LENGTH; 
+    }
+    else if ( cmd_args.sort_words_by_scrabble_score ) {
+        sorting_algorithm = SORT_SCRABBLE;
+    }
+
     
-    // resolve what sorting algorithm to do and pass to sort_word_list()
-    // TODO
-
-
-    sort_word_list( cmd_args.reverse, SORT_LEX ); //reverse? which sort (lex? length?, etc.)
-
-
+    sort_word_list( cmd_args.reverse, sorting_algorithm ); 
 
     print_word_list( cmd_args.num_sorted_words, cmd_args.print_only_unique_words );
 
