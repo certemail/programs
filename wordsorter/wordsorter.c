@@ -94,7 +94,7 @@ void process_file( const char * filename )
     FILE *fp;
     char *token;
     char line[LINE_SIZE]; 
-    const char *delims = " ?;!,\n\t\\";
+    const char *delims = " .?;!,\n\t\\";
 
     printf("***processing: %s\n", filename);
     
@@ -208,7 +208,7 @@ void sort_word_list()
     }
     printf("number of items: %ld\n", num_items);
 
-    qsort( word_list, sizeof(PWORD), num_items, sorting_func );
+    qsort( word_list, num_items, sizeof(PWORD), sorting_func );
 
     printf("sorting complete\n");
 }//----------------end sort_word_list()
