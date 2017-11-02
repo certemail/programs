@@ -311,6 +311,60 @@ int sort_word_length_reverse(const void *left, const void *right)
     return ( r_len - l_len  );
 }//----------------end sort_word_length_reverse()
 
+int sort_numerically(const void *left, const void *right)
+{
+    PWORD l =  *((PWORD *)left);  
+    PWORD r =  *((PWORD *)right); 
+
+    const char * a = l->word;
+    const char * b = r->word;
+
+    // www.strchr.com/natural_sorting
+    while (*a == *b) 
+    {
+        if(*a == '\0') 
+        {
+            return 0;
+        }
+        a++; b++;
+    }
+
+    int diff = strspn(a, "0123456789") - strspn(b, "0123456789");
+    if (diff)
+    {
+        return diff;
+    }
+    return *a - *b;
+
+}//----------------end sort_numerically()
+
+int sort_numerically_reverse(const void *left, const void *right)
+{
+    PWORD l =  *((PWORD *)left);  
+    PWORD r =  *((PWORD *)right); 
+
+    const char * a = l->word;
+    const char * b = r->word;
+
+    // www.strchr.com/natural_sorting
+    while (*b == *a) 
+    {
+        if(*b == '\0') 
+        {
+            return 0;
+        }
+        a++; b++;
+    }
+
+    int diff = strspn(b, "0123456789") - strspn(a, "0123456789");
+    if (diff)
+    {
+        return diff;
+    }
+    return *b - *a;
+
+}//----------------end sort_numerically_reverse()
+
 void sort_word_list( int reverse, int sorting_algorithm )
 {
     size_t num_items;
@@ -334,7 +388,7 @@ void sort_word_list( int reverse, int sorting_algorithm )
                 break;
 
             case SORT_AS_NUMBERS:
-                // TODO
+                qsort( word_list, num_items, sizeof(PWORD), sort_numerically_reverse );
                 break;
 
             default:
@@ -360,7 +414,7 @@ void sort_word_list( int reverse, int sorting_algorithm )
                 break;
 
             case SORT_AS_NUMBERS:
-                // TODO
+                qsort( word_list, num_items, sizeof(PWORD), sort_numerically );
                 break;
                 
             default:
