@@ -291,12 +291,45 @@ int sort_word_length_reverse(const void *left, const void *right)
     return ( r_len - l_len  );
 }//----------------end sort_word_length_reverse()
 
-void sort_word_list()
+void sort_word_list( int reverse, int sorting_algorithm )
 {
     size_t num_items;
     num_items = get_num_words();
 
-    qsort( word_list, num_items, sizeof(PWORD), sort_lexicographically );
+    if ( reverse )
+    {
+        switch( sorting_algorithm )
+        {
+            case 0:
+                qsort( word_list, num_items, sizeof(PWORD), sort_lexicographically_reverse );
+                break;
+
+            default:
+                fprintf( stderr, "%s\n", "algorithm unknown" );
+        }
+
+    }
+
+    else
+    {
+        switch( sorting_algorithm )
+        {
+            case 0:
+                qsort( word_list, num_items, sizeof(PWORD), sort_lexicographically );
+                break;
+
+            default:
+                fprintf( stderr, "%s\n", "algorithm unknown" );
+                
+
+        }
+
+
+
+    }
+
+
+    //qsort( word_list, num_items, sizeof(PWORD), sort_lexicographically );
 
     // TODO case switch statement to call appropriate sorting func
 

@@ -3,8 +3,13 @@
 #include <unistd.h>
 #include <ctype.h>
 
+#define SORT_LEX            0
+#define SORT_LENGTH         1
+#define SORT_SCRABBLE       2
+#define SORT_AS_NUMBERS     3
+
 typedef struct global_args {
-    char *c_num_sorted_words;            // -c <num> as string
+    char *c_num_sorted_words;           // -c <num> as string
     int num_sorted_words;               // -c <num>
     int reverse;                        // -r
     int sort_words_as_numbers;          // -n
@@ -14,7 +19,7 @@ typedef struct global_args {
     int print_only_unique_words;        // -u
     int print_help_menu;                // -h
     int num_input_files;                // number of files specified on cmd line
-    char **input_files;                  // input files
+    char **input_files;                 // input files
 } CMD_LINE_ARGS;
 
 
@@ -159,8 +164,13 @@ int main(int argc, char **argv)
     }
 
     
+    // resolve what sorting algorithm to do and pass to sort_word_list()
+    // TODO
 
-    sort_word_list();
+
+    sort_word_list( cmd_args.reverse, SORT_LEX ); //reverse? which sort (lex? length?, etc.)
+
+
 
     print_word_list( cmd_args.num_sorted_words );
 
