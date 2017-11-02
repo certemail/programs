@@ -1,6 +1,6 @@
 CC=gcc
 ARCH=  # -m32 for 32-bit
-CFLAGS=${ARCH} -Wall -pedantic -std=c99
+CFLAGS=${ARCH} -Wall -pedantic 
 LDFLAGS=${ARCH}
 LIBS=
 

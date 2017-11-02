@@ -135,7 +135,9 @@ int main(int argc, char **argv)
     {
         for (; optind < argc; optind++){
             printf("processing file: %s\n", argv[optind]);
+
             // TODO call sorting_functions...
+            process_file(argv[optind]);
         }
     } 
     else 
@@ -144,6 +146,12 @@ int main(int argc, char **argv)
             // TODO read words from stdin and pass to sorting functions... 
     }
 
+
+    sort_word_list();
+
+    print_word_list();
+
+    free_word_list();
         
     return 0;
 }

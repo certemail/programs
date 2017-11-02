@@ -214,32 +214,3 @@ void sort_word_list()
 }//----------------end sort_word_list()
 
 
-int main(int argc, char *argv[])
-{
-    int idx;
-
-    printf("\n");
-    if ( argc < 2 ) 
-    {
-        printf( "usage: <prog> <filename>\n" );
-        exit(1);
-    } 
-    else 
-    {
-        memset(word_list, '\0', sizeof(word_list));
-
-        idx = argc - 1;
-        while (idx >= 1) 
-        {
-            process_file(argv[idx]);
-            idx--;
-        }
-    }
-    sort_word_list();
-
-    print_word_list();
-
-    free_word_list();
-
-    return 0;
-}//----------------end main()
