@@ -4,10 +4,12 @@
 #define MAX_WORDS       10000
 #define LINE_SIZE         500
 
-#define SORT_LEX            0
-#define SORT_LENGTH         1
-#define SORT_SCRABBLE       2
-#define SORT_AS_NUMBERS     3
+enum algorithms { 
+        SORT_LEX, 
+        SORT_LENGTH, 
+        SORT_SCRABBLE, 
+        SORT_AS_NUMBERS 
+};
 
 typedef struct _word {
     char *word;

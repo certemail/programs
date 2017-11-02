@@ -55,8 +55,10 @@ void add_word(char *w)
         if ( strcmp( (*wptr)->word, w ) == 0 )
         {
             // word is already in the word_list
-            printf("%s%s\n\n", (*wptr)->word,  " already exists in list" );
             (*wptr)->count++;
+#ifdef DEBUG
+            printf("%s%s\n\n", (*wptr)->word,  " already exists in list" );
+#endif 
             
             return;
         }
@@ -91,8 +93,10 @@ void add_word(char *w)
     // update count
     (*wptr)->count++;
     
+#ifdef DEBUG
     printf("just added: %s\n", (*wptr)->word);
     printf("count is now: %d\n\n", (*wptr)->count);
+#endif
 
     return;
 }//----------------end add_word()
@@ -169,7 +173,10 @@ void process_file( const char * filename )
     FILE *fp;
     char line[LINE_SIZE]; 
 
+#ifdef DEBUG
     printf("***processing: %s\n", filename);
+#endif
+
     
     if (  ( fp = fopen( filename, "r" ) )   == NULL )
     {
@@ -239,7 +246,6 @@ size_t get_num_words()
 #ifdef DEBUG
     printf("number of words in list: %ld\n", num_items);
 #endif
-
     return num_items;
 }
 
@@ -310,9 +316,8 @@ void sort_word_list( int reverse, int sorting_algorithm )
 
             default:
                 fprintf( stderr, "%s\n", "algorithm unknown" );
-        }
-
-    }
+        } 
+    } // end if
 
     // sort ascending
     else
@@ -338,18 +343,11 @@ void sort_word_list( int reverse, int sorting_algorithm )
             default:
                 fprintf( stderr, "%s\n", "algorithm unknown" );
         }
-    }
+    } // end else
 
-
-    //qsort( word_list, num_items, sizeof(PWORD), sort_lexicographically );
-
-    // TODO case switch statement to call appropriate sorting func
-
-    //qsort( word_list, num_items, sizeof(PWORD), sort_lexicographically_reverse );
-    //qsort( word_list, num_items, sizeof(PWORD), sort_word_length );
-    //qsort( word_list, num_items, sizeof(PWORD), sort_word_length_reverse );
-
+#ifdef DEBUG
     printf("sorting complete\n");
+#endif
 }//----------------end sort_word_list()
 
 

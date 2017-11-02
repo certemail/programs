@@ -118,7 +118,9 @@ int main(int argc, char **argv)
 
 
     
+#ifdef DEBUG
     printf("%s\n", "***parsing command line options:");
+#endif
 
     // [ -h ] display help menu
     if ( cmd_args.print_help_menu ) {
@@ -131,20 +133,26 @@ int main(int argc, char **argv)
     {
         // convert to integer
         cmd_args.num_sorted_words = atoi(cmd_args.c_num_sorted_words);
+#ifdef DEBUG
         printf("number of sorted words to display: %d\n", cmd_args.num_sorted_words );
+#endif
     }
 
     // [ -r ] sort in reverse order
     if ( cmd_args.reverse )
     {
+#ifdef DEBUG
         printf("reverse: %d\n", cmd_args.reverse );
+#endif
     }
 
 
 
 
-    // get filenames to sort
+#ifdef DEBUG
     printf("\n%s\n", "***parsing command line arguments:");
+#endif
+    // get filenames to sort
     if (optind < argc)
     {
         for (; optind < argc; optind++){
@@ -155,7 +163,7 @@ int main(int argc, char **argv)
     } 
     else 
     {
-        printf("no filenames provided, reading from stdin:\n");
+        printf("Enter words to be sorted:\n");
             process_from_stdin();
     }
 
