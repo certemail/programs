@@ -89,6 +89,70 @@ void add_word(char *w)
     return;
 }//----------------end add_word()
 
+void process_line( char *line )
+{
+    char *token;
+    const char *delims = " .?;!,\n\t\\";
+
+    char *copy = (char *)malloc( strlen( line ) + 1);
+    if (copy == NULL) {
+        return;
+    }
+
+    // NULL terminator space included
+    strcpy( copy, line );
+
+    // get first token in line
+    token = strtok( copy, delims );
+
+    // sanitize (convert to lowercase, check for non-alpa chars)
+    sanitize_token( token );
+    
+    // add first token to word_list
+    add_word( token );
+
+    // get subsequent tokens
+    while( (token = strtok(NULL, delims) ) ) {
+        sanitize_token(token);
+        add_word(token);
+    }
+    free( copy );
+    copy = NULL;
+    
+    return;
+}
+
+void process_from_stdin()
+{
+    // read from command line
+    char buffer[MAX_WORDS];
+    int ch;
+    char *p;
+    
+    // read from stdin 
+    if (fgets(buffer, sizeof(buffer), stdin)) 
+    {
+        p = strchr(buffer, '\n');
+        if (p) 
+        {
+            *p = '\0';
+        }	
+        else 
+        {
+            // newline not found (input exceeded buffer size) flush stdin to end of line
+            while (((ch = getchar()) != '\n')
+                        && !feof(stdin)
+                        && !ferror(stdin)  );
+        }
+    }
+    else 
+    {
+        fprintf(stderr, "%s\n", "failure to reading from stdin");
+    }
+
+    process_line( buffer );
+}
+
 void process_file( const char * filename )
 {
     FILE *fp;
