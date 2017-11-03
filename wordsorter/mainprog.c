@@ -22,15 +22,15 @@ typedef struct global_args {
 
 void display_usage()
 {
-    printf("usage: %s", "<prog>");
+    printf("%s\n", "usage: ws [OPTIONS]");
     printf("\t%s\n", "-c <number_first_results_to_print>");
-    printf("\t\t%s\n", "-r print in reverse order");
-    printf("\t\t%s\n", "-n sort words as if numbers");
-    printf("\t\t%s\n", "-l sort words by length");
-    printf("\t\t%s\n", "-s sorts by scrabble score");
-    printf("\t\t%s\n", "-a sorts lexicographically");
-    printf("\t\t%s\n", "-u print only unique words");
-    printf("\t\t%s\n", "-h help menu");
+    printf("\t%s\n", "-r print in reverse order");
+    printf("\t%s\n", "-n sort words as if numbers");
+    printf("\t%s\n", "-l sort words by length");
+    printf("\t%s\n", "-s sorts by scrabble score");
+    printf("\t%s\n", "-a sorts lexicographically");
+    printf("\t%s\n", "-u print only unique words");
+    printf("\t%s\n", "-h help menu");
 }
 
 int main(int argc, char **argv)

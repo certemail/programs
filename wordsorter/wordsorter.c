@@ -200,7 +200,7 @@ void add_word(char *w)
 void process_line( char *line )
 {
     char *token;
-    const char *delims = " .?;!,\n\t\\";
+    const char *delims = " {}[]|~`@#$%^&*()-+/:'<>.?;!,\n\t\\";
 
     char *copy = (char *)malloc( strlen( line ) + 1);
     if ( copy == NULL ) 
