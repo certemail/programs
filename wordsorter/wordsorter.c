@@ -5,7 +5,7 @@
 #include "wordsorter.h"
 #include "utils.h"
 
-void print_word_list( int num_items_to_print, int unique )
+void print_word_list( int num_items_to_print, int unique, int show_scrabble )
 {
     int i;
 
@@ -77,7 +77,14 @@ void print_word_list( int num_items_to_print, int unique )
                 free( scrabble_score_buf );
             }
 #else
+
+            if ( show_scrabble == 1  && ( word_list[i]->scrabble_score == 0 ) )
+            {
+                // do not print scrabble words with score of zero
+                continue;
+            }
             printf( "%s\n", word_list[i]->word );
+
 #endif
         }
     }

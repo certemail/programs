@@ -192,7 +192,9 @@ int main(int argc, char **argv)
     
     sort_word_list( cmd_args.reverse, sorting_algorithm ); 
 
-    print_word_list( cmd_args.num_sorted_words, cmd_args.print_only_unique_words );
+    print_word_list( cmd_args.num_sorted_words, 
+                     cmd_args.print_only_unique_words, 
+                     cmd_args.sort_words_by_scrabble_score);
 
     // free memory
     free_word_list();
