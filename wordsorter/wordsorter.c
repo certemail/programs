@@ -35,6 +35,9 @@ void print_word_list( int num_items_to_print, int unique )
     {
         num_items_to_print = MAX_WORDS;    
     }
+
+    printf( "\n%-20s%-20s%-20s\n", "word", "frequency", "scrabble-score" );
+    printf( "------------------------------------------------------\n");
     
     // print only unique words
     if ( unique )
@@ -47,9 +50,12 @@ void print_word_list( int num_items_to_print, int unique )
 
         while ( ( wptr < end ) && ( *wptr != NULL ) && ( i < num_items_to_print )  )
         {
+            // word is unique
             if ( (*wptr)->count == 1 )
             {
-                printf( "%d %s\n", (*wptr)->count, (*wptr)->word );
+                printf( "%-20s %-20d %-20d\n", (*wptr)->word, 
+                                               (*wptr)->count, 
+                                               (*wptr)->scrabble_score );
                 i++;
             }
             wptr++;
@@ -58,7 +64,6 @@ void print_word_list( int num_items_to_print, int unique )
     else
     {
         // print all words
-        printf( "%-20s%-20s%-20s\n", "word", "frequency", "scrabble-score" );
         for ( i = 0; i < num_items_to_print && word_list[i] != NULL; i++ )
         {
              printf( "%-20s %-20d %-20d\n", word_list[i]->word, 
@@ -86,6 +91,14 @@ int compute_scrabble_score( char * w )
     while ( *ptr != '\0' )
     {
         idx = (*ptr) - 'a';
+
+        // check if word contains non-alphabetic characters (e.g., file1)
+        if ( idx < 0 || idx > 25 )
+        {
+           score = 0;
+           break;
+        }
+
         score += points[idx];
         ptr++;
     }
@@ -341,6 +354,7 @@ int sort_word_length_reverse(const void *left, const void *right)
     return ( r_len - l_len  );
 }//----------------end sort_word_length_reverse()
 
+
 int sort_numerically(const void *left, const void *right)
 {
     PWORD l =  *((PWORD *)left);  
@@ -395,6 +409,23 @@ int sort_numerically_reverse(const void *left, const void *right)
 
 }//----------------end sort_numerically_reverse()
 
+
+int sort_scrabble_score(const void *left, const void *right)
+{
+    PWORD l =  *((PWORD *)left);  
+    PWORD r =  *((PWORD *)right); 
+
+    return ( l->scrabble_score - r->scrabble_score  );
+}//----------------end sort_scrabble_score()
+
+int sort_scrabble_score_reverse(const void *left, const void *right)
+{
+    PWORD l =  *((PWORD *)left);  
+    PWORD r =  *((PWORD *)right); 
+
+    return ( r->scrabble_score - l->scrabble_score  );
+}//----------------end sort_scrabble_score_reverse()
+
 void sort_word_list( int reverse, int sorting_algorithm )
 {
     size_t num_items;
@@ -414,7 +445,7 @@ void sort_word_list( int reverse, int sorting_algorithm )
                 break;
                 
             case SORT_SCRABBLE:
-                // TODO
+                qsort( word_list, num_items, sizeof(PWORD), sort_scrabble_score_reverse );
                 break;
 
             case SORT_AS_NUMBERS:
@@ -440,7 +471,7 @@ void sort_word_list( int reverse, int sorting_algorithm )
                 break;
         
             case SORT_SCRABBLE:
-                // TODO
+                qsort( word_list, num_items, sizeof(PWORD), sort_scrabble_score );
                 break;
 
             case SORT_AS_NUMBERS:

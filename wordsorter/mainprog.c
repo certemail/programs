@@ -191,6 +191,7 @@ int main(int argc, char **argv)
 
     print_word_list( cmd_args.num_sorted_words, cmd_args.print_only_unique_words );
 
+    // free memory
     free_word_list();
         
     return 0;
