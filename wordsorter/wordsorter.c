@@ -26,6 +26,26 @@ void sanitize_token(char * token)
     }
 }//----------------end sanitize_token()
 
+char * convert_decimal_to_string( int num )
+{
+    // callee must free memory
+
+    char * buffer = NULL;
+    size_t buffer_size = sizeof(int) * 4 + 1;
+
+    buffer = (char *)malloc( buffer_size );
+
+    if ( buffer == NULL )
+    {
+        fprintf( stderr, "%s\n", "malloc failed()" );
+        abort();
+    }
+
+    snprintf( buffer, buffer_size, "%d", num );
+
+    return buffer;
+}
+
 void print_word_list( int num_items_to_print, int unique )
 {
     int i;
@@ -35,8 +55,6 @@ void print_word_list( int num_items_to_print, int unique )
     {
         num_items_to_print = MAX_WORDS;    
     }
-
-
 
     printf( "\n%-20s%-20s%-20s\n", "word", "frequency", "scrabble-score" );
     printf( "------------------------------------------------------\n");
@@ -58,14 +76,16 @@ void print_word_list( int num_items_to_print, int unique )
                 // convert scrabble score to display as '-' if value is zero
                 // scrabble score of zero indicates it is contains both letters and numbers
                 // (e.g., file 1)
-                char scrabble_score[sizeof(int) * 4 + 1];
-                snprintf( scrabble_score, sizeof(scrabble_score), "%d", (*wptr)->scrabble_score );
-                 
+                char * scrabble_score_buf = convert_decimal_to_string( (*wptr)->scrabble_score );
 
                 printf( "%-20s %-20d %-20s\n", (*wptr)->word, 
                                                (*wptr)->count, 
-                                               ( strcmp ( scrabble_score, "0" ) == 0 ) ? "-" : scrabble_score );
-                                               //scrabble_score );
+                                               ( strcmp ( scrabble_score_buf, "0" ) == 0 ) ? "-" : scrabble_score_buf );
+                if ( scrabble_score_buf )
+                {
+                    free( scrabble_score_buf );
+                }
+
                 i++;
             }
             wptr++;
@@ -76,9 +96,18 @@ void print_word_list( int num_items_to_print, int unique )
         // print all words
         for ( i = 0; i < num_items_to_print && word_list[i] != NULL; i++ )
         {
-             printf( "%-20s %-20d %-20d\n", word_list[i]->word, 
+            // convert scrabble score to display as '-' if value is zero
+            // scrabble score of zero indicates it is contains both letters and numbers
+            // (e.g., file 1)
+            char * scrabble_score_buf = convert_decimal_to_string( word_list[i]->scrabble_score );
+
+            printf( "%-20s %-20d %-20s\n",  word_list[i]->word, 
                                             word_list[i]->count, 
-                                            word_list[i]->scrabble_score );
+                                            ( strcmp ( scrabble_score_buf, "0" ) == 0 ) ? "-" : scrabble_score_buf );
+            if ( scrabble_score_buf )
+            {
+                free( scrabble_score_buf );
+            }
         }
     }
 }//----------------end print_word_list()
@@ -113,7 +142,7 @@ int compute_scrabble_score( char * w )
         ptr++;
     }
     return score;
-}
+}//----------------end compute_scrabble_score() 
 
 void add_word(char *w)
 {
