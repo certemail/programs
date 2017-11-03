@@ -15,8 +15,10 @@ void print_word_list( int num_items_to_print, int unique )
         num_items_to_print = MAX_WORDS;    
     }
 
+#ifdef DEBUG
     printf( "\n%-20s%-20s%-20s\n", "word", "frequency", "scrabble-score" );
     printf( "------------------------------------------------------\n");
+#endif
     
     // print only unique words
     if ( unique )
@@ -32,6 +34,8 @@ void print_word_list( int num_items_to_print, int unique )
             // word is unique
             if ( (*wptr)->count == 1 )
             {
+
+#ifdef DEBUG
                 // convert scrabble score to display as '-' if value is zero
                 // scrabble score of zero indicates it is contains both letters and numbers
                 // (e.g., file 1)
@@ -44,7 +48,9 @@ void print_word_list( int num_items_to_print, int unique )
                 {
                     free( scrabble_score_buf );
                 }
-
+#else
+                printf( "%s\n", (*wptr)->word );
+#endif
                 i++;
             }
             wptr++;
@@ -55,6 +61,9 @@ void print_word_list( int num_items_to_print, int unique )
         // print all words
         for ( i = 0; i < num_items_to_print && word_list[i] != NULL; i++ )
         {
+
+
+#ifdef DEBUG
             // convert scrabble score to display as '-' if value is zero
             // scrabble score of zero indicates it is contains both letters and numbers
             // (e.g., file 1)
@@ -67,11 +76,17 @@ void print_word_list( int num_items_to_print, int unique )
             {
                 free( scrabble_score_buf );
             }
+#else
+            printf( "%s\n", word_list[i]->word );
+#endif
         }
     }
-    
+
+#ifdef DEBUG 
     printf( "------------------------------------------------------\n");
     printf( "'-' scrabble score not computed for alphanumeric words \n\n" );
+#endif
+
 }//----------------end print_word_list()
 
 int compute_scrabble_score( char * w )
@@ -120,9 +135,6 @@ void add_word(char *w)
         {
             // word is already in the word_list
             (*wptr)->count++;
-#ifdef DEBUG
-            printf("%s%s\n\n", (*wptr)->word,  " already exists in list" );
-#endif 
             
             return;
         }
@@ -160,11 +172,6 @@ void add_word(char *w)
     // update count
     (*wptr)->count++;
     
-#ifdef DEBUG
-    printf("just added: %s\n", (*wptr)->word);
-    printf("count is now: %d\n\n", (*wptr)->count);
-#endif
-
     return;
 }//----------------end add_word()
 
@@ -240,11 +247,6 @@ void process_file( const char * filename )
     FILE *fp;
     char line[LINE_SIZE]; 
 
-#ifdef DEBUG
-    printf("***processing: %s\n", filename);
-#endif
-
-    
     if (  ( fp = fopen( filename, "r" ) )   == NULL )
     {
         fprintf( stderr, "%s%s\n", "error opening file: ", filename );
@@ -311,7 +313,7 @@ size_t get_num_words()
         num_items++;
     }
 #ifdef DEBUG
-    printf("number of words in list: %ld\n", num_items);
+    printf("\nnumber of words in list: %ld\n", num_items);
 #endif
     return num_items;
 }
@@ -484,9 +486,6 @@ void sort_word_list( int reverse, int sorting_algorithm )
         }
     } // end else
 
-#ifdef DEBUG
-    printf("sorting complete\n");
-#endif
 }//----------------end sort_word_list()
 
 

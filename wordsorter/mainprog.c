@@ -156,22 +156,20 @@ int main(int argc, char **argv)
     // get filenames to sort
     if (optind < argc)
     {
-        for (; optind < argc; optind++){
-
-#ifdef DEBUG
-            printf("processing file: %s\n", argv[optind]);
-#endif
+        for (; optind < argc; optind++)
+        {
             process_file(argv[optind]);
         }
     } 
     else 
     {
         printf("Enter words to be sorted:\n");
-            process_from_stdin();
+        process_from_stdin();
     }
 
 
 #ifdef DEBUG
+    printf("command line options for sorting method:\n");
     printf("-n: %d\n", cmd_args.sort_words_as_numbers );
     printf("-l: %d\n", cmd_args.sort_words_by_length  );
     printf("-s: %d\n", cmd_args.sort_words_by_scrabble_score );
