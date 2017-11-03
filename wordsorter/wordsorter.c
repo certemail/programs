@@ -7,7 +7,7 @@
 
 void print_word_list( int num_items_to_print, int unique, int show_scrabble )
 {
-    int i;
+    int i = 0;
 
     // num_items_to_print not specified - print all
     if ( num_items_to_print <= 0 )
@@ -49,9 +49,24 @@ void print_word_list( int num_items_to_print, int unique, int show_scrabble )
                     free( scrabble_score_buf );
                 }
 #else
-                printf( "%s\n", (*wptr)->word );
+
+                if ( ( show_scrabble == 1 ) &&  ( (*wptr)->scrabble_score == 0 ) )
+                {
+                    // do nothing (dont print word) 
+                }
+                
+                else if ( ( show_scrabble == 1 ) && ( (*wptr)->scrabble_score > 0 ) )
+                {
+                    printf( "%s\n", (*wptr)->word );
+                    i++;
+                }
+                else 
+                {
+
+                    printf( "%s\n", (*wptr)->word );
+                    i++;
+                }
 #endif
-                i++;
             }
             wptr++;
         }
