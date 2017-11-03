@@ -58,12 +58,39 @@ void print_word_list( int num_items_to_print, int unique )
     else
     {
         // print all words
+        printf( "%-20s%-20s%-20s\n", "word", "frequency", "scrabble-score" );
         for ( i = 0; i < num_items_to_print && word_list[i] != NULL; i++ )
         {
-             printf( "%d %s\n", word_list[i]->count, word_list[i]->word);
+             printf( "%-20s %-20d %-20d\n", word_list[i]->word, 
+                                            word_list[i]->count, 
+                                            word_list[i]->scrabble_score );
         }
     }
 }//----------------end print_word_list()
+
+int compute_scrabble_score( char * w )
+{
+    int score;
+    int idx;
+    char *ptr;
+
+    int points[] = { 
+          //A   B   C   D   E   F   G   H   I   J   K   L   M
+            1,  3,  3,  2,  1,  4,  2,  4,  1,  8,  5,  1,  3, 
+
+          //N   O   P   Q   R   S   T   U   V   W   X   Y   Z
+            1,  1,  3, 10,  1,  1,  1,  1,  4,  4,  8,  4, 10 };
+
+    score = 0;
+    ptr = w;
+    while ( *ptr != '\0' )
+    {
+        idx = (*ptr) - 'a';
+        score += points[idx];
+        ptr++;
+    }
+    return score;
+}
 
 void add_word(char *w)
 {
@@ -89,7 +116,6 @@ void add_word(char *w)
     }
 
     // word has not been added yet
-
     // allocate space for new WORD struct
     *wptr = (PWORD)malloc( sizeof(WORD) );
     if(  *wptr == NULL ) 
@@ -109,9 +135,13 @@ void add_word(char *w)
         abort();
     }
 
-    
     //sufficient space for NULL terminator
     strcpy( (*wptr)->word, w );
+
+
+    // compute scrabble score
+    compute_scrabble_score( w );
+    (*wptr)->scrabble_score = compute_scrabble_score( w );
 
     // update count
     (*wptr)->count++;

@@ -14,6 +14,7 @@ enum algorithms {
 typedef struct _word {
     char *word;
     int count;
+    int scrabble_score;
 } WORD, *PWORD;
 
 PWORD word_list[MAX_WORDS];
