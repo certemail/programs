@@ -3,48 +3,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "wordsorter.h"
-
-
-char * remove_newline(char *line)
-{
-    //returns NULL if newline not found
-    char *p = strchr(line, '\n');
-    if( p )
-    {
-        *p = '\0';
-    }
-    return p;
-} //----------------end remove_newline()
-
-void sanitize_token(char * token)
-{
-    // convert to lowercase
-    int i;
-    for ( i = 0 ; i < strlen(token); i++ )
-    {
-        token[i] = tolower(token[i]);
-    }
-}//----------------end sanitize_token()
-
-char * convert_decimal_to_string( int num )
-{
-    // callee must free memory
-
-    char * buffer = NULL;
-    size_t buffer_size = sizeof(int) * 4 + 1;
-
-    buffer = (char *)malloc( buffer_size );
-
-    if ( buffer == NULL )
-    {
-        fprintf( stderr, "%s\n", "malloc failed()" );
-        abort();
-    }
-
-    snprintf( buffer, buffer_size, "%d", num );
-
-    return buffer;
-}
+#include "utils.h"
 
 void print_word_list( int num_items_to_print, int unique )
 {
@@ -225,7 +184,7 @@ void process_line( char *line )
     token = strtok( copy, delims );
 
     // sanitize (convert to lowercase, check for non-alpa chars)
-    sanitize_token( token );
+    convert_to_lowercase( token );
     
     // add first token to word_list
     add_word( token );
@@ -233,7 +192,7 @@ void process_line( char *line )
     // get subsequent tokens
     while( (token = strtok(NULL, delims) ) ) 
     {
-        sanitize_token(token);
+        convert_to_lowercase(token);
         add_word(token);
     }
     free( copy );

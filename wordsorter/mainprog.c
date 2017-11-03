@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include "wordsorter.h"
+#include "utils.h"
 
 typedef struct global_args {
     char *c_num_sorted_words;           // -c <num> as string
@@ -139,6 +140,17 @@ int main(int argc, char **argv)
     } // end while
 
 
+    // [ -c ] print only first n results of sorted list
+    // validate user entered a well formed number on command line
+    if ( cmd_args.c_num_sorted_words )
+    {
+        // convert to integer
+        if ( convert_string_to_int( cmd_args.c_num_sorted_words, &cmd_args.num_sorted_words ) == FAILURE ) 
+        {
+            display_usage();
+            exit( EXIT_SUCCESS );
+        }
+    }
 
 
     // get filenames to sort
@@ -158,13 +170,6 @@ int main(int argc, char **argv)
             process_from_stdin();
     }
 
-
-    // [ -c ] print only first n results of sorted list
-    if ( cmd_args.c_num_sorted_words )
-    {
-        // convert to integer
-        cmd_args.num_sorted_words = atoi(cmd_args.c_num_sorted_words);
-    }
 
 #ifdef DEBUG
     printf("-n: %d\n", cmd_args.sort_words_as_numbers );
