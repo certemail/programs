@@ -50,12 +50,12 @@ void print_word_list( int num_items_to_print, int unique, int show_scrabble )
                 }
 #else
 
-                if ( ( show_scrabble == 1 ) &&  ( (*wptr)->scrabble_score == 0 ) )
+                if ( show_scrabble &&  ( (*wptr)->scrabble_score == 0 ) )
                 {
                     // do nothing (dont print word) 
                 }
                 
-                else if ( ( show_scrabble == 1 ) && ( (*wptr)->scrabble_score > 0 ) )
+                else if ( show_scrabble && ( (*wptr)->scrabble_score > 0 ) )
                 {
                     printf( "%s\n", (*wptr)->word );
                     i++;
@@ -93,7 +93,7 @@ void print_word_list( int num_items_to_print, int unique, int show_scrabble )
             }
 #else
 
-            if ( show_scrabble == 1  && ( word_list[i]->scrabble_score == 0 ) )
+            if ( show_scrabble && ( word_list[i]->scrabble_score == 0 ) )
             {
                 // do not print scrabble words with score of zero
                 continue;
