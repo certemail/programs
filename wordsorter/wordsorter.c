@@ -36,6 +36,8 @@ void print_word_list( int num_items_to_print, int unique )
         num_items_to_print = MAX_WORDS;    
     }
 
+
+
     printf( "\n%-20s%-20s%-20s\n", "word", "frequency", "scrabble-score" );
     printf( "------------------------------------------------------\n");
     
@@ -53,9 +55,17 @@ void print_word_list( int num_items_to_print, int unique )
             // word is unique
             if ( (*wptr)->count == 1 )
             {
-                printf( "%-20s %-20d %-20d\n", (*wptr)->word, 
+                // convert scrabble score to display as '-' if value is zero
+                // scrabble score of zero indicates it is contains both letters and numbers
+                // (e.g., file 1)
+                char scrabble_score[sizeof(int) * 4 + 1];
+                snprintf( scrabble_score, sizeof(scrabble_score), "%d", (*wptr)->scrabble_score );
+                 
+
+                printf( "%-20s %-20d %-20s\n", (*wptr)->word, 
                                                (*wptr)->count, 
-                                               (*wptr)->scrabble_score );
+                                               ( strcmp ( scrabble_score, "0" ) == 0 ) ? "-" : scrabble_score );
+                                               //scrabble_score );
                 i++;
             }
             wptr++;
