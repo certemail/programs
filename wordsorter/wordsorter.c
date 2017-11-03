@@ -71,7 +71,7 @@ void print_word_list( int num_items_to_print, int unique )
     }
     
     printf( "------------------------------------------------------\n");
-    printf( " '-' denotes illegal scrabble word \n\n" );
+    printf( "'-' scrabble score not computed for alphanumeric words \n\n" );
 }//----------------end print_word_list()
 
 int compute_scrabble_score( char * w )
