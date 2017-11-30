@@ -1,22 +1,47 @@
 .intel_syntax noprefix	
 
-fmtstr:
+.fmtstr:
     .asciz "Computing fib(%d)...\n"
 
 .globl main
 main:
 
-    xor rbx, rbx
-    mov rbx, [rsi + 8]          # rbx = &(argv+8)
+        # get argv[1]
+        #xor rbx, rbx
+        #xor rax, rax
 
-    xor rax, rax
-    mov al, BYTE PTR [rbx]      # al = argv[1]
-    
+        #mov rbx, rsi
+        #mov rbx, QWORD PTR [rbx]
+        #add rbx, 0x8
+        #mov rax, QWORD PTR [rbx]
+        
+        #------------------
+        
+        mov rcx, 0x7    # TODO -> rcx will contain user input [ fib(n) ]
+        add rcx, 0x1    # add 1 so loop from <= n
 
-    ret
+        mov rdx, 0x3    # rdx starts at 3
+        
+        # compute fibonacci
 
+        mov r8,  0x1    # f_0 = 1
+        mov r9,  0x1    # f_1 = 1
 
+L1:
+        cmp rdx, rcx
+        je L2
+        
+        add r8, r9
+        mov rax, r8     # rax = r8 + r9  (result = f_0 + f_1)
 
+        mov r8, r9      # r8  = r9      (f_0 = f_1)
+        mov r9, rax     # r9  = result  (f_1 = result)
+        
+        add rdx, 1
+        jmp L1
+L2:
+         
+        ret
 
 
 
