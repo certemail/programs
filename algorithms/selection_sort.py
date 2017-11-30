@@ -7,14 +7,12 @@ def swap(array, first_index, second_index):
 
 def index_of_minimum(array, start_index):
     print("getting index of minimum, starting at index: " + str(start_index))
-    #min_value = array[start_index];
     min_index = start_index;
 
     for curr_index in range(min_index+1, len(array)):
-        print("comparing: " + str(array[curr_index]) + ":" + str(array[min_index]))
+        print("comparison #" + str(curr_index) + ": " + str(array[curr_index]) + ":" + str(array[min_index]))
         if array[curr_index] < array[min_index]:
             min_index = curr_index;
-            #min_value = array[min_index]
     return min_index;
 
 def selection_sort(array):
