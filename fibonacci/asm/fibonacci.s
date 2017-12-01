@@ -3,8 +3,15 @@
 .fmtstr:
     .asciz "Result: 0x%016x\n"
 
+.fmtstr_err:
+    .asciz "usage: <prog> <fib(n)>\n"
+
 .globl main
 main:
+        # -- validate cmd line args
+        cmp rdi, 0x2
+        jne EXIT
+
         # -- get argv[1]
         mov rbx, rsi                # rbx = argv
         add rbx, 8                  # rbx = &(argv[1])
@@ -56,5 +63,21 @@ PRINT:
         xor rax, rax                # zero rax (no floating points passed)
 
         call printf
-                
+        xor rax, rax                # return 0
+        ret
+
+EXIT:
+        # -- print error message                
+        mov rdi, OFFSET .fmtstr_err
+        xor rax, rax
+        call printf
+
+        xor rax, rax                # return 0
         ret 
+
+
+
+
+
+
+
