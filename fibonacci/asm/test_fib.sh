@@ -21,3 +21,24 @@ echo
 echo
 echo "testing fib(47):"
 ./fibonacci 47
+echo
+
+echo "testing fib(92):"
+./fibonacci 92
+echo
+
+echo "testing fib(93):"
+./fibonacci 93
+echo
+
+echo "testing fib(94):"
+./fibonacci 94
+echo
+
+echo "testing fib(95):"
+./fibonacci 95
+echo
+
+echo "testing fib(100):"
+./fibonacci 100
+echo
