@@ -6,24 +6,45 @@
 .fmtstr_err:
     .asciz "usage: <prog> <fib(n)>\n\tn must be non-negative\n"
 
+.fmtstr_prompt:
+    .asciz "Please enter the desired Fibonacci Number (0-186): "
+
+.fmtstr_input:
+    .asciz "%s"
+
 .globl main
 main:
-        # -- validate cmd line args
-        cmp rdi, 0x2
-        jne EXIT
+        ## -- validate cmd line args
+        #cmp rdi, 0x2
+        #jne 
 
-        # -- get argv[1]
-        mov rbx, rsi                # rbx = argv
-        add rbx, 8                  # rbx = &(argv[1])
-        mov rbx, [rbx]              # rbx = argv[1]
+        ## -- get argv[1]
+        #mov rbx, rsi                # rbx = argv
+        #add rbx, 8                  # rbx = &(argv[1])
+        #mov rbx, [rbx]              # rbx = argv[1]
+
+        push rbp
+        mov rbp, rsp
+        sub rsp, 0x10
+
+        # prompt user for input
+        mov rdi, OFFSET .fmtstr_prompt
+        xor rax, rax
+        call printf
+
+        # -- read in user input
+        mov rdi, OFFSET .fmtstr_input
+        lea rsi, [rbp-0x4]
+        xor rax, rax
+        call scanf
 
         # -- convert to int
-        mov rdi, rbx
+        lea rdi, [rbp-0x4]
         call atoi                   
 
         # --validate non-negative
         cmp rax, 0x0
-        jl EXIT
+        jl ERROR
 
         # -- handle base cases 
         cmp rax, 0x0                # fib(0) = 0
@@ -77,17 +98,22 @@ PRINT:
         xor rax, rax                # zero rax (no floating points passed)
 
         call printf
-        xor rax, rax                # return 0
-        ret
+        jmp EXIT
 
-EXIT:
+ERROR:
         # -- print error message                
         mov rdi, OFFSET .fmtstr_err
         xor rax, rax
         call printf
 
+        xor rax, rax                
+        jmp EXIT 
+
+EXIT:
+        mov rsp, rbp
+        pop rbp
         xor rax, rax                # return 0
-        ret 
+        ret
 
 
 
