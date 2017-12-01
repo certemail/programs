@@ -14,18 +14,13 @@
 
 .globl main
 main:
-        ## -- validate cmd line args
-        #cmp rdi, 0x2
-        #jne 
-
-        ## -- get argv[1]
-        #mov rbx, rsi                # rbx = argv
-        #add rbx, 8                  # rbx = &(argv[1])
-        #mov rbx, [rbx]              # rbx = argv[1]
-
         push rbp
         mov rbp, rsp
         sub rsp, 0x10
+
+        # -- check if user entered cmd line arg
+        cmp rdi, 0x2
+        je CMD_LINE_ARG
 
         # prompt user for input
         mov rdi, OFFSET .fmtstr_prompt
@@ -41,7 +36,19 @@ main:
         # -- convert to int
         lea rdi, [rbp-0x4]
         call atoi                   
+        jmp VALIDATE
 
+CMD_LINE_ARG:
+        # -- get argv[1]
+        mov rbx, rsi                # rbx = argv
+        add rbx, 8                  # rbx = &(argv[1])
+        mov rax, [rbx]              # rax = argv[1]
+
+        # -- convert to int
+        mov rdi, rax                
+        call atoi
+
+VALIDATE:
         # --validate non-negative
         cmp rax, 0x0
         jl ERROR
@@ -60,7 +67,7 @@ main:
         add rcx, 0x1                # add 1 so loop from <= n
         mov r13, 0x3                # start fib(n) calcuation at n=3
         
-        # -- compute fib(n)
+        # -- initialization 
         xor r14, r14                # f_0  ( r14:r8 )
         mov r8,  0x1                # f_0 = 1
 
@@ -68,6 +75,7 @@ main:
         mov r9,  0x1                # f_1 = 1
 
 LOOP_FIB:
+        # -- compute fib(n)
         cmp r13, rcx                # rcx contains n; r13 is counter
         je PRINT
                                      
