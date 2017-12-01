@@ -4,7 +4,7 @@
     .asciz "Result: 0x%016x\n"
 
 .fmtstr_err:
-    .asciz "usage: <prog> <fib(n)>\n"
+    .asciz "usage: <prog> <fib(n)>\n\tn must be non-negative\n"
 
 .globl main
 main:
@@ -20,6 +20,10 @@ main:
         # -- convert to int
         mov rdi, rbx
         call atoi                   
+
+        # --validate non-negative
+        cmp rax, 0x0
+        jl EXIT
 
         # -- handle base cases 
         cmp rax, 0x0                # fib(0) = 0

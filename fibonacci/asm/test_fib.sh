@@ -1,3 +1,11 @@
+echo "testing no commandl line args provided:"
+./fibonacci
+echo
+
+echo "testing negative number (-1) provided:"
+./fibonacci -1
+echo
+
 ./fibonacci 0
 ./fibonacci 1
 ./fibonacci 2
