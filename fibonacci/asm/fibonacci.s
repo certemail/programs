@@ -47,7 +47,6 @@ main:
         mov r9,  0x1                # f_1 = 1
 
 LOOP_FIB:
-        
         cmp r13, rcx                # rcx contains n; r13 is counter
         je PRINT
                                      
