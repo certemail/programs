@@ -1,10 +1,5 @@
-echo "testing no commandl line args provided:"
-./fibonacci
-echo
+#!/bin/bash
 
-echo "testing negative number (-1) provided:"
-./fibonacci -1
-echo
 
 ./fibonacci 0
 ./fibonacci 1
@@ -41,4 +36,24 @@ echo
 
 echo "testing fib(100):"
 ./fibonacci 100
+echo
+
+echo "testing fib(186):"
+./fibonacci 186
+echo
+
+echo "testing negative number fib(-1):"
+./fibonacci -1
+echo
+
+echo "testing out of range fib(187):"
+./fibonacci 187
+echo
+
+echo "testing 3 command line args provided:"
+./fibonacci 47 47
+echo
+
+echo "testing no command line args provided:"
+./fibonacci
 echo

@@ -1,10 +1,10 @@
 .intel_syntax noprefix	
 
 .fmtstr:
-    .asciz "Result: 0x%016llx %016llx\n"
+    .asciz "Result: 0x%016llX %016llX\n"
 
 .fmtstr_err:
-    .asciz "usage: <PROG> [FIB(N)]\n\tn must be non-negative\n"
+    .asciz "usage: <PROG> [FIB(N)]\n\tn must be non-negative (0-186)\n"
 
 .fmtstr_prompt:
     .asciz "Please enter the desired Fibonacci Number (0-186): "
@@ -55,6 +55,9 @@ L2:
         # --validate non-negative
         cmp rax, 0x0
         jl ERROR
+
+        cmp rax, 186                # max fib(n) to calculate
+        jg ERROR
 
         # -- handle base cases 
         cmp rax, 0x0                # fib(0) = 0
