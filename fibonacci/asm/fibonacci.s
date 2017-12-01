@@ -4,7 +4,7 @@
     .asciz "Result: 0x%016llx %016llx\n"
 
 .fmtstr_err:
-    .asciz "usage: <prog> <fib(n)>\n\tn must be non-negative\n"
+    .asciz "usage: <PROG> [FIB(N)]\n\tn must be non-negative\n"
 
 .fmtstr_prompt:
     .asciz "Please enter the desired Fibonacci Number (0-186): "
@@ -18,11 +18,14 @@ main:
         mov rbp, rsp
         sub rsp, 0x10
 
-        # -- check if user entered cmd line arg
-        cmp rdi, 0x2
-        je CMD_LINE_ARG
+        # -- check argc
+        cmp rdi, 0x3
+        jge ERROR
 
-        # prompt user for input
+        cmp rdi, 0x2
+        je L1
+
+        # -- prompt user for input
         mov rdi, OFFSET .fmtstr_prompt
         xor rax, rax
         call printf
@@ -34,21 +37,21 @@ main:
         call scanf
 
         # -- convert to int
-        lea rdi, [rbp-0x4]
-        call atoi                   
-        jmp VALIDATE
+        lea rdi, [rbp-0x4]          # rdi = &n
+        jmp L2
 
-CMD_LINE_ARG:
+L1:
         # -- get argv[1]
         mov rbx, rsi                # rbx = argv
         add rbx, 8                  # rbx = &(argv[1])
-        mov rax, [rbx]              # rax = argv[1]
+        mov rbx, [rbx]              # rax = argv[1]
 
+        mov rdi, rbx                # rdi = argv[1]
+
+L2:
         # -- convert to int
-        mov rdi, rax                
         call atoi
 
-VALIDATE:
         # --validate non-negative
         cmp rax, 0x0
         jl ERROR
@@ -83,10 +86,10 @@ LOOP_FIB:
         adc r14, r15                # add high-order 64 bits w/ carry
                                     # result is now in: r14:r8
                                     
-        mov rdx, r14                # rdx:rax = r14:r8 (result = f_0 + f_1)               
+        mov rdx, r14                # rdx:rax = r14:r8  (result = f_0 + f_1)               
         mov rax, r8                 
 
-        mov r14, r15                # r14:r8  = r15:r9 (f_0 = f_1)
+        mov r14, r15                # r14:r8  = r15:r9  (f_0 = f_1)
         mov r8, r9                  
                          
         mov r15, rdx                # r15:r9  = result  (f_1 = result)
@@ -122,10 +125,3 @@ EXIT:
         pop rbp
         xor rax, rax                # return 0
         ret
-
-
-
-
-
-
-
