@@ -27,6 +27,7 @@ def main():
     NUM_TRIALS = int(args.num_trials)
     
     total_tosses = 0
+    total_bins_empty = 0
 
     # initialize bins
 
@@ -39,7 +40,7 @@ def main():
         number_of_tosses_until_k_balls_in_bin = 0
 
         # toss balls into bins
-        for i in range(NUM_BINS):
+        for i in range(NUM_BALLS):
             rng = secrets.SystemRandom()
             random_bin = rng.randint(0, NUM_BINS-1)
             print("toss #{} --> goes into bin#{}".format( (i+1), (random_bin+1)))
@@ -56,10 +57,16 @@ def main():
 
             print()
         print("-----------------------------")
+        total_bins_empty += bins.count(0)
+        print("number of empty bins: {}".format(bins.count(0)))
         print("number of tosses until one of the bins has {} balls: {}".format(K_BALLS, number_of_tosses_until_k_balls_in_bin))
-
+    
+    print("\n**************************************")
+    print("total empty bins {}".format(total_bins_empty))
+    print("average number of empty bins: {:.3f}".format( float(total_bins_empty) / float(NUM_TRIALS)))
     print("total tosses: {}".format(total_tosses))
     print("average number of tosses: {:.3f}".format( float(total_tosses) / float(NUM_TRIALS )))
+    print("**************************************")
     
 if __name__ == '__main__':
     main()
