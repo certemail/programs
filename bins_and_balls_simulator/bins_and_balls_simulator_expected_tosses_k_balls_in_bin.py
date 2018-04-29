@@ -17,11 +17,10 @@ def main():
         numeric_level = getattr(logging, args.log.upper(), None)
         if not isinstance(numeric_level, int):
             raise ValueError('Invalid log level: %s' % loglevel)
-        logging.basicConfig(filename='log.txt', \
-                            filemode='w', \
-                            level=numeric_level, \
-                            format='%(levelname)s: %(message)s')
-                            #stream=sys.stdout, level=numeric_level, format='%(levelname)s: %(message)s')
+        logging.basicConfig(level=numeric_level, \
+                            format='%(levelname)s: %(message)s', \
+                            stream=sys.stdout)
+                            #filename='log.txt', filemode='w'
 
     NUM_BINS = int(args.num_bins)
     K_BALLS = int(args.k_balls)
@@ -50,7 +49,8 @@ def main():
             # randomly select bin
             rng = secrets.SystemRandom()
             random_bin = rng.randint(0, NUM_BINS-1)
-            logging.debug("toss #{} --> goes into bin {}".format( (tosses), (random_bin+1)))
+            logging.debug("toss #{} --> goes into bin {}". \
+                                  format( (tosses), (random_bin+1)))
 
             # add ball to random bin
             bins[random_bin] += 1
@@ -63,8 +63,11 @@ def main():
                 break
 
     print("----------------------------")
-    print("total tosses until a bin has {} balls: {}".format(K_BALLS, total_tosses))
-    print("average number of tosses until a bin has {} balls: {:.4f}".format( K_BALLS, (float(total_tosses) / float(NUM_TRIALS ))))
+    print("total tosses until a bin has {} balls: {}". \
+                        format(K_BALLS, total_tosses))
+
+    print("average number of tosses until a bin has {} balls: {:.4f}". \
+                        format( K_BALLS, (float(total_tosses) / float(NUM_TRIALS ))))
     
 if __name__ == '__main__':
     main()
