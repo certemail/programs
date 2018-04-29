@@ -20,7 +20,6 @@ def main():
             raise ValueError('Invalid log level: %s' % loglevel)
         logging.basicConfig(filename='log.txt', filemode='w', level=numeric_level, format='%(levelname)s: %(message)s')
 
-
     NUM_BINS = int(args.num_bins)
     NUM_BALLS = int(args.num_balls) 
     K_BALLS = int(args.k_balls)
@@ -29,43 +28,47 @@ def main():
     total_tosses = 0
     total_bins_empty = 0
 
-    # initialize bins
 
     for i in range(NUM_TRIALS):
-        print("\n****TRIAL {} ****".format(i+1))
+        #print("\n****TRIAL {} ****".format(i+1))
 
         # initialize all bins to have zero balls
         bins = [0 for i in range(NUM_BINS)]
 
         number_of_tosses_until_k_balls_in_bin = 0
 
-        # toss balls into bins
+        # begin tossing...
         for i in range(NUM_BALLS):
+
+            # randomly select bin
             rng = secrets.SystemRandom()
             random_bin = rng.randint(0, NUM_BINS-1)
-            print("toss #{} --> goes into bin#{}".format( (i+1), (random_bin+1)))
+            #print("toss #{} --> goes into bin#{}".format( (i+1), (random_bin+1)))
 
+            # add ball to random bin
             bins[random_bin] += 1
 
-            print("\tbins: ", str(bins))
+            #print("\tbins: ", str(bins))
 
-            # check if any bin has K balls
+            # check if any bin now has K balls
             if K_BALLS in bins:
                 number_of_tosses_until_k_balls_in_bin = i+1
                 total_tosses += i+1
                 break
 
-            print()
-        print("-----------------------------")
+            #print()
+
         total_bins_empty += bins.count(0)
-        print("number of empty bins: {}".format(bins.count(0)))
-        print("number of tosses until one of the bins has {} balls: {}".format(K_BALLS, number_of_tosses_until_k_balls_in_bin))
+        #print("-----------------------------")
+        #print("number of empty bins: {}".format(bins.count(0)))
+        #print("number of tosses until one of the bins has {} balls: {}".format(K_BALLS, number_of_tosses_until_k_balls_in_bin))
     
     print("\n**************************************")
-    print("total empty bins {}".format(total_bins_empty))
-    print("average number of empty bins: {:.3f}".format( float(total_bins_empty) / float(NUM_TRIALS)))
-    print("total tosses: {}".format(total_tosses))
-    print("average number of tosses: {:.3f}".format( float(total_tosses) / float(NUM_TRIALS )))
+    print("total empty bins: {}".format(total_bins_empty))
+    print("average number of empty bins: {:.4f}".format( float(total_bins_empty) / float(NUM_TRIALS)))
+    print()
+    print("total tosses until a bin has {} balls: {}".format(K_BALLS, total_tosses))
+    print("average number of tosses until a bin has {} balls: {:.4f}".format( K_BALLS, (float(total_tosses) / float(NUM_TRIALS ))))
     print("**************************************")
     
 if __name__ == '__main__':
