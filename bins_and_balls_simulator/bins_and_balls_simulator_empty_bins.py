@@ -44,7 +44,8 @@ def main():
             # randomly select bin
             rng = secrets.SystemRandom()
             random_bin = rng.randint(0, NUM_BINS-1)
-            logging.debug("toss #{} --> goes into bin {}".format( (tosses+1), (random_bin+1)))
+            logging.debug("toss #{} --> goes into bin {}". \
+                              format( (tosses+1), (random_bin+1)))
 
             # add ball to random bin
             bins[random_bin] += 1
@@ -57,7 +58,8 @@ def main():
     
     print("----------------------------------------")
     print("total empty bins: {}".format(total_bins_empty))
-    print("average number of empty bins: {:.5f}".format( float(total_bins_empty) / float(NUM_TRIALS)))
+    print("average number of empty bins: {:.5f}". \
+                        format( float(total_bins_empty) / float(NUM_TRIALS)))
     
 if __name__ == '__main__':
     main()
