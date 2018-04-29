@@ -3,6 +3,7 @@ import argparse
 import random
 import logging
 import secrets 
+import sys
 
 def main():
     parser = argparse.ArgumentParser()
@@ -16,10 +17,10 @@ def main():
         numeric_level = getattr(logging, args.log.upper(), None)
         if not isinstance(numeric_level, int):
             raise ValueError('Invalid log level: %s' % loglevel)
-        logging.basicConfig(filename='log.txt', \
-                            filemode='w', \
-                            level=numeric_level, \
-                            format='%(levelname)s: %(message)s')
+        logging.basicConfig(level=numeric_level, \
+                            format='%(levelname)s: %(message)s', \
+                            stream=sys.stdout)
+                            #filename='log.txt', filemode='w'
 
     NUM_BINS = int(args.num_bins)
     NUM_BALLS = int(args.num_balls) 
