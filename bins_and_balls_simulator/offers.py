@@ -4,6 +4,7 @@ import random
 import logging
 import secrets 
 import sys
+import math
 
 def main():
     parser = argparse.ArgumentParser()
@@ -27,28 +28,51 @@ def main():
     print("number offers:   {}".format(NUM_OFFERS))
     print("running {:,} trials ...".format(NUM_TRIALS))
 
+    first_quarter = math.ceil(NUM_OFFERS / 4)
+    logging.debug("1/4: {}".format(first_quarter))
+
+
+    wins = 0
+    losses = 0
+
     for i in range(NUM_TRIALS):
+        best_offer_chosen = 0
+
         logging.debug("\n**** TRIAL {} ****".format(i+1))
 
-        # sample without replacement
+        # initialize random dollar amount of each offer (sample without replacement)
         offers = random.sample(range(1, NUM_OFFERS+1), NUM_OFFERS) 
-        print(offers)
+        logging.debug(offers)
 
-        for i in range(NUM_OFFERS):
+        # get the max of the first 1/4 of offers
+        logging.debug(offers[:first_quarter])
 
-            j = i 
-            ## randomly select bin
-            #rng = secrets.SystemRandom()
-            ##random_dollar_amount = rng.randint(0, NUM_OFFERS-1)
-            #random_dollar_amount = rng.randint(0, NUM_OFFERS-1)
+        max_first_quarter = max(offers[:first_quarter])
+        logging.debug("max amount in 1/4 offers: {}".format(max_first_quarter))
 
-            ## add ball to random bin
-            #offers[i] = random_dollar_amount
+        # loop thru and stop after the first offer higher than the max in the first 1/4
+        
+        for i in range(first_quarter, NUM_OFFERS):
+            logging.debug(offers[i])
+            if offers[i] > max_first_quarter:
+                best_offer_chosen = offers[i]
+                logging.debug("FIRST HIGHEST PAST {} is {}".format(max_first_quarter, best_offer_chosen))
+                break
+            
+        if best_offer_chosen == max(offers):
+            logging.debug("FOUND HIGHEST")
+            wins += 1
+        else:
+            logging.debug("LOSE! highest offer is: {}".format(max(offers)))
+            losses += 1
 
-        #print("-----------------------------")
-        #print("\t  offer: {}".format(offers))
-    
-    
+
+    print("--------------------")
+    print("average: {:.3f}".format(wins / losses))
 if __name__ == '__main__':
     main()
 
+    ## randomly select bin
+    #rng = secrets.SystemRandom()
+    ##random_dollar_amount = rng.randint(0, NUM_OFFERS-1)
+    #random_dollar_amount = rng.randint(0, NUM_OFFERS-1)
