@@ -9,6 +9,7 @@ import math
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("num_offers", help="number of offers")
+    parser.add_argument("fraction_to_open", help="fraction of offers to open (e.g., .25)")
     parser.add_argument("num_trials", help="number of trials")
     parser.add_argument("--log", help="log level")
     args = parser.parse_args()
@@ -24,12 +25,14 @@ def main():
 
     NUM_OFFERS = int(args.num_offers)
     NUM_TRIALS = int(args.num_trials)
+    FRACTION_TO_OPEN = float(args.fraction_to_open)
     
     print("number offers:   {}".format(NUM_OFFERS))
     print("running {:,} trials ...".format(NUM_TRIALS))
 
-    first_quarter = math.ceil(NUM_OFFERS / 4)
-    logging.debug("1/4: {}".format(first_quarter))
+    #fraction_to_open = .25
+    offers_opened = math.ceil(NUM_OFFERS * FRACTION_TO_OPEN)
+    logging.debug("{} of {} offers: {} will be opened".format(FRACTION_TO_OPEN, NUM_OFFERS, offers_opened))
 
 
     wins = 0
@@ -45,19 +48,19 @@ def main():
         offers = rng.sample(range(1, NUM_OFFERS+1), NUM_OFFERS)
         logging.debug("SECURE OFFERS: {}".format(offers))
 
-        # get the max of the first 1/4 of offers
-        logging.debug(offers[:first_quarter])
+        # get the max of the first 1/x of offers
+        logging.debug(offers[:offers_opened])
 
-        max_first_quarter = max(offers[:first_quarter])
-        logging.debug("max amount in 1/4 offers: {}".format(max_first_quarter))
+        max_offers_opened = max(offers[:offers_opened])
+        logging.debug("max amount in opened offers: {}".format(max_offers_opened))
 
         # loop thru and stop after the first offer higher than the max in the first 1/4
         
-        for i in range(first_quarter, NUM_OFFERS):
+        for i in range(offers_opened, NUM_OFFERS):
             logging.debug(offers[i])
-            if offers[i] > max_first_quarter:
+            if offers[i] > max_offers_opened:
                 best_offer_chosen = offers[i]
-                logging.debug("FIRST HIGHEST PAST {} is {}".format(max_first_quarter, best_offer_chosen))
+                logging.debug("FIRST HIGHEST PAST {} is {}".format(max_offers_opened, best_offer_chosen))
                 break
             
         if best_offer_chosen == max(offers):
