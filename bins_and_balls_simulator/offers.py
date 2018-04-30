@@ -33,7 +33,7 @@ def main():
 
 
     wins = 0
-    losses = 1
+    losses = 0
 
     for i in range(NUM_TRIALS):
         best_offer_chosen = 0
@@ -69,7 +69,9 @@ def main():
 
 
     print("--------------------")
-    print("average: {:.3f}".format(wins / losses))
+    print("total wins:   {}".format(wins))
+    print("total losses: {}".format(losses))
+    print("average: {:.3f}".format(wins / NUM_TRIALS))
 if __name__ == '__main__':
     main()
 
