@@ -33,7 +33,7 @@ def main():
 
 
     wins = 0
-    losses = 0
+    losses = 1
 
     for i in range(NUM_TRIALS):
         best_offer_chosen = 0
@@ -41,8 +41,9 @@ def main():
         logging.debug("\n**** TRIAL {} ****".format(i+1))
 
         # initialize random dollar amount of each offer (sample without replacement)
-        offers = random.sample(range(1, NUM_OFFERS+1), NUM_OFFERS) 
-        logging.debug(offers)
+        rng = secrets.SystemRandom()
+        offers = rng.sample(range(1, NUM_OFFERS+1), NUM_OFFERS)
+        logging.debug("SECURE OFFERS: {}".format(offers))
 
         # get the max of the first 1/4 of offers
         logging.debug(offers[:first_quarter])
@@ -72,7 +73,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-    ## randomly select bin
-    #rng = secrets.SystemRandom()
-    ##random_dollar_amount = rng.randint(0, NUM_OFFERS-1)
-    #random_dollar_amount = rng.randint(0, NUM_OFFERS-1)
