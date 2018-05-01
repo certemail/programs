@@ -28,7 +28,7 @@ def main():
     FRACTION_TO_OPEN = float(args.fraction_to_open)
     
     print("total number of offers:   {}".format(NUM_OFFERS))
-    print("fraction of offers opened first: {}".format(FRACTION_TO_OPEN))
+    print("fraction to open first:   {}".format(FRACTION_TO_OPEN))
     print("running {:,} trials ...".format(NUM_TRIALS))
 
     #fraction_to_open = .25
