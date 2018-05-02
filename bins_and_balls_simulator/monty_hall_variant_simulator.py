@@ -86,6 +86,9 @@ def main():
             logging.debug("LOSE! highest offer is: {}".format(max(offers)))
             losses += 1
 
+    sys.stdout.write("\r{:,} of {:,} completed".format(NUM_TRIALS, NUM_TRIALS))
+    sys.stdout.flush()
+
 
     print()
     print("--------------------------------")
