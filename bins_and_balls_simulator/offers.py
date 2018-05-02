@@ -29,7 +29,8 @@ def main():
     
     print("total number of offers:   {}".format(NUM_OFFERS))
     print("fraction to open first:   {}".format(FRACTION_TO_OPEN))
-    print("running {:,} trials ...".format(NUM_TRIALS))
+    print("running {:,} trials...".format(NUM_TRIALS))
+    print("--------------------------------")
 
     #fraction_to_open = .25
     offers_opened = math.ceil(NUM_OFFERS * FRACTION_TO_OPEN)
@@ -40,6 +41,9 @@ def main():
     losses = 0
 
     for i in range(NUM_TRIALS):
+        if i % (NUM_TRIALS / 10) == 0:
+            sys.stdout.write("\r{:,} of {:,} completed".format(i, NUM_TRIALS))
+            sys.stdout.flush()
         best_offer_chosen = 0
 
         logging.debug("\n**** TRIAL {} ****".format(i+1))
@@ -47,7 +51,7 @@ def main():
         # initialize random dollar amount of each offer (sample without replacement)
         rng = secrets.SystemRandom()
         offers = rng.sample(range(1, NUM_OFFERS+1), NUM_OFFERS)
-        logging.debug("SECURE OFFERS: {}".format(offers))
+        logging.debug("OFFERS: {}".format(offers))
 
         # get the max of the first 1/x of offers
         logging.debug(offers[:offers_opened])
@@ -72,10 +76,11 @@ def main():
             losses += 1
 
 
-    print("--------------------")
+    print()
+    print("--------------------------------")
     print("total wins:   {}".format(wins))
     print("total losses: {}".format(losses))
-    print("average: {:.3f}".format(wins / NUM_TRIALS))
+    print("average: {:.4f}".format(wins / NUM_TRIALS))
 if __name__ == '__main__':
     main()
 
