@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 import argparse
 import random
 import logging
@@ -6,8 +7,18 @@ import secrets
 import sys
 import math
 
+prog_description= \
+"""
+Variation of the monty hall problem. You receive n offers for some job. 
+The offers arrived in your mailbox in random order must decide right away 
+to accept the offer or move on to the next one. once you accept an offer, 
+you are committed and cannot accept offers from those you have not yet opened. 
+Implements algorithm to open the first 1/n offers, record the max, and then 
+pick the first one that is greater than the max in the first 1/n.
+"""
+
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=prog_description)
     parser.add_argument("num_offers", help="number of offers")
     parser.add_argument("fraction_to_open", help="fraction of offers to open (e.g., .25)")
     parser.add_argument("num_trials", help="number of trials")
