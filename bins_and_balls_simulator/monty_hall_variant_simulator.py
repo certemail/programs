@@ -43,7 +43,6 @@ def main():
     print("running {:,} trials...".format(NUM_TRIALS))
     print("--------------------------------")
 
-    #fraction_to_open = .25
     offers_opened = math.ceil(NUM_OFFERS * FRACTION_TO_OPEN)
     logging.debug("{} of {} offers: {} will be opened".format(FRACTION_TO_OPEN, NUM_OFFERS, offers_opened))
 
@@ -53,7 +52,7 @@ def main():
 
     for i in range(NUM_TRIALS):
         if i % (NUM_TRIALS / 10) == 0:
-            sys.stdout.write("\r{:,} of {:,} completed".format(i, NUM_TRIALS))
+            sys.stdout.write("\rcompleted: {:,} of {:,}".format(i, NUM_TRIALS))
             sys.stdout.flush()
         best_offer_chosen = 0
 
@@ -86,7 +85,7 @@ def main():
             logging.debug("LOSE! highest offer is: {}".format(max(offers)))
             losses += 1
 
-    sys.stdout.write("\r{:,} of {:,} completed".format(NUM_TRIALS, NUM_TRIALS))
+    sys.stdout.write("\rcompleted: {:,} of {:,}".format(NUM_TRIALS, NUM_TRIALS))
     sys.stdout.flush()
 
 
