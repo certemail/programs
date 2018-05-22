@@ -20,7 +20,7 @@ def number_by_file_extension(root_dir, file_ext):
 
 def main():
     parser = argparse.ArgumentParser(description="inserts line numbers in source code files")
-    parser.add_argument("base_dir", help="root directory of source files to add linenumbers")
+    parser.add_argument("base_dir", help="root directory of source files to add line numbers")
     parser.add_argument("file_ext", help="file extension of files to modify e.g., .c, .java, etc")
     args = parser.parse_args()
 
