@@ -35,7 +35,7 @@ def main():
         exit(1)
 
     print()
-    number_by_file_extension("_test_dir_1", "*.c")
+    number_by_file_extension(base_dir, file_ext)
 
 if __name__ == '__main__':
     main()
