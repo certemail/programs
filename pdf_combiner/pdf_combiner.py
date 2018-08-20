@@ -4,17 +4,29 @@
 
 import os
 import PyPDF2
+import argparse
 
 OUTPUT_PDF = 'OUTPUT.pdf'
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d,", "--directory", help="directory containing individual PDF files")
+    args = parser.parse_args()
+
+    # default, search current working directory
+    if args.directory == None:
+        directory_with_pdfs = os.getcwd()
+    else:
+        directory_with_pdfs = args.directory
+
     # remove previous output
     if os.path.exists(OUTPUT_PDF):
         print("Deleting {}".format(OUTPUT_PDF))
         os.remove(OUTPUT_PDF)
 
     pdffiles = []
-    for filename in os.listdir('.'):
+    print("Finding all PDFs in: {}".format(os.path.abspath(directory_with_pdfs)))
+    for filename in os.listdir(directory_with_pdfs):
         if filename.endswith('.pdf'):
             pdffiles.append(filename)
 
@@ -28,7 +40,7 @@ def main():
 
     # loop through all pdf files
     for filename in pdffiles:
-        print("processing: {}".format(filename))
+        print("\tprocessing: {}".format(filename))
         pdfFileObj = open(filename, 'rb')
         pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
 
