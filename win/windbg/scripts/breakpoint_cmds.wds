@@ -1,0 +1,100 @@
+$$ ---- alias for color  ("changed"=red, "emphfg"=blue)
+aS COL_BOLD_BEG_1 <b><col fg=\\\"changed\\\">
+aS COL_BOLD_BEG_2 <b><col fg=\\\"emphfg\\\"> 
+aS COL_BOLD_END </col></b>
+
+$$ ----- hide "load module" and symbol error messages
+sxi ld
+sxi eh
+!sym prompts off
+!sym quiet
+.outmask-6
+.symopt+0x100
+
+$$ ----- Bypass Sleep Attempts
+bu kernelbase!sleepex ".printf \"Application tried to sleep: %u seconds...\",poi(esp+4);.echo;ed esp+4 0x0;g"
+
+$$ ----- Break at entry point, set a breakpoint when anything tries to access the PEB isDebugged byte and assemble backwards from there.
+bu $exentry "ba r 1 $peb+0x2 \"ub\";g"
+
+$$ ----- Break at entry point, zero out PEB isDebugged byte to evade attempts to check this specific byte.
+bu $exentry "eb $peb+0x2 0x0"
+
+$$ ----- Printout Files Being Created
+bu kernelbase!CreateFileA ".if(poi(esp+0x14) != 0n3){.printf \"CreateFileA(): %ma\",poi(esp+0x4);.echo};g"
+$$ bu kernelbase!CreateFileW ".if(poi(esp+0x14) != 0n3){.printf \"CreateFileW(): %mu\",poi(esp+0x4);.echo};g"
+bu kernelbase!CreateFileW ".if(poi(esp+0x14) != 0n3){.printf /D \"${COL_BOLD_BEG_1}CreateFileW()${COL_BOLD_END}: ${COL_BOLD_BEG_2}%mu${COL_BOLD_END}\", poi(esp+0x4);.echo};g"
+
+$$ ----- Print Contents of File Buffer when being written to.
+bu kernelbase!WriteFile ".printf /D \"${COL_BOLD_BEG_1}WriteFile() contents from 0x%p as ASCII${COL_BOLD_END}:\\n${COL_BOLD_BEG_2}%ma${COL_BOLD_END}\",poi(esp+0x8),poi(esp+0x8);.echo;g"
+
+$$ ----- Printout Files Being Deleted
+bu kernel32!DeleteFileA ".printf /D \"${COL_BOLD_BEG_1}DeleteFileA()${COL_BOLD_END}: ${COL_BOLD_BEG_2}%ma${COL_BOLD_END}\",poi(esp);.echo;g"
+bu kernel32!DeleteFileW ".printf /D \"${COL_BOLD_BEG_1}DeleteFileW()${COL_BOLD_END}: ${COL_BOLD_BEG_2}%mu${COL_BOLD_END}\",poi(esp+4);.echo;g"
+
+$$ ----- BYPASS FILE DELETION
+$$ bu kernel32!DeleteFileW ".printf /D \"${COL_BOLD_BEG_1}DeleteFileW() <u>[BYPASS]</u>${COL_BOLD_END}: ${COL_BOLD_BEG_2}%mu${COL_BOLD_END}\", poi(esp+4);ed esp+4 0x0;.echo;g"
+$$ bu kernel32!DeleteFileA ".printf /D \"${COL_BOLD_BEG_1}DeleteFileA() <u>[BYPASS]</u>${COL_BOLD_END}: ${COL_BOLD_BEG_2}%ma${COL_BOLD_END}\",poi(esp);.echo;ed esp+4 0x0;g"
+
+$$ ----- Printout Files Being Moved
+bu kernel32!MoveFileExW ".printf \"File moved.\";.echo;.printf \"From: %mu\",poi(esp+0x4);.echo;.printf \"To: %mu\",poi(esp+0x8);.echo;g"
+bu kernel32!MoveFileExA ".printf \"File moved.\";.echo;.printf \"From: %ma\",poi(esp+0x4);.echo;.printf \"To: %ma\",poi(esp+0x8);.echo;g"
+
+$$ ----- Printout Files Being Copied
+bu kernel32!CopyFileW ".printf \" Copying file: \";.echo;.printf \"\tFrom: %mu\",poi(esp+0x4);.echo;.printf \"\tTo: %mu\",poi(esp+0x8);.echo;g"
+bu kernel32!CopyFileA ".printf \" Copying file: \";.echo;.printf \"\tFrom: %ma\",poi(esp+0x4);.echo;.printf \"\tTo: %ma\",poi(esp+0x8);.echo;g"
+
+$$ ----- Printout Registry Keys Being Created.
+bu kernel32!RegCreateKeyExA ".printf \"Creating RegKey: %ma\",poi(esp+0x8);.echo;g"
+bu kernel32!RegCreateKeyExW ".printf \"Creating RegKey: %mu\",poi(esp+0x8);.echo;g"
+
+$$ ----- Printout Registry Keys Being Accessed.
+bu kernel32!RegOpenKeyExA ".printf /D \"${COL_BOLD_BEG_1}Accessed RegKey${COL_BOLD_END}: %ma\",poi(esp+0x8);.echo;g"
+bu kernel32!RegOpenKeyExW ".printf /D \"${COL_BOLD_BEG_1}Accessed RegKey${COL_BOLD_END}: %mu\",poi(esp+0x8);.echo;g"
+
+$$ ----- Printout Registry Key Values being accessed.
+bu kernel32!RegQueryValueExA ".printf \"\tAccessed RegValue: %ma\",poi(esp+0x8);.echo;g"
+bu kernel32!RegQueryValueExW ".printf \"\tAccessed RegValue: %mu\",poi(esp+0x8);.echo;g"
+
+$$ ----- Printout Registry Key Values being set.
+bu kernel32!RegSetValueExA ".printf \"Setting RegKey %ma to value: %ma\",poi(esp+0x8),poi($$esp+0x14);.echo;g"
+bu kernel32!RegSetValueExW ".printf \"Setting RegKey %mu to value: %mu\",poi(esp+0x8),poi(esp+0x14);.echo;g"
+
+$$ ----- Printout Services Being Created.
+bu advapi32!CreateServiceA ".printf \"Creating Service: \";.echo;.printf \"\tService Name: %ma\",poi(esp+0x4);.echo;.printf \"\tDisplay Name: %ma\",poi(esp+0x8);.echo;g"
+bu advapi32!CreateServiceW ".printf \"Creating Service: \";.echo;.printf \"\tService Name: %mu\",poi(esp+0x4);.echo;.printf \"\tDisplay Name: %mu\",poi(esp+0x8);.echo;g"
+
+$$ ----- Printout Processes Being Created.
+bu kernel32!CreateProcessW ".printf \"Creating Process: %mu\",poi(esp+0x8);.echo;g"
+bu kernel32!CreateProcessA ".printf \"Creating Process: %ma\",poi(esp+0x8);.echo;g"
+
+$$ ----- Printout Commands Being Executed
+bu shell32!shellexecuteW ".printf\"Running Command:\";.echo;\"\tOperation: %mu\";.echo;\"\tTarget: %mu\";.echo;\"\tParams: %mu\",poi(esp+0x8),poi(esp+0xC),poi(esp+0x10);.echo;g"
+bu shell32!shellexecuteA ".printf\"Running Command:\";.echo;\"\tOperation: %ma\";.echo;\"\tTarget: %ma\";.echo;\"\tParams: %mu\",poi(esp+0x8),poi(esp+0xC),poi(esp+0x10);.echo;g"
+bu shell32!shellExecuteExW ".printf\"Running Command:\";.echo;\"\tOperation: %mu\";.echo;\"\tTarget: %mu\";.echo;\"\tParams: %mu\",poi(poi(esp+0x4)+0xC),poi(poi(esp+0x4)+0x10),poi(poi(esp+0x4)+0x14);.echo;g"
+bu shell32!shellExecuteExA ".printf\"Running Command:\";.echo;\"\tOperation: %ma\";.echo;\"\tTarget: %ma\";.echo;\"\tParams: %ma\",poi(poi(esp+0x4)+0xC),poi(poi(esp+0x4)+0x10),poi(poi(esp+0x4)+0x14);.echo;g"
+
+$$ ----- Printout Libraries Being Loaded.
+bu kernel32!LoadLibraryA ".printf \"LoadLibraryA(): %ma\",poi(esp+0x4);.echo;g"
+bu kernel32!LoadLibraryW ".printf \"LoadLibraryW(): %mu\",poi(esp+0x4);.echo;g"
+
+$$ ----- Printout Functions Being Looked Up
+bu kernel32!GetProcAddress ".printf /D \"\t ${COL_BOLD_BEG_1}GetProcAddress()${COL_BOLD_END}: ${COL_BOLD_BEG_2}%ma${COL_BOLD_END}\",poi(esp+0x8);.echo;g"
+
+$$ ----- Search all of user-land memory for ascii based strings. IE: http://
+$$ s -a 0x0 L?0x7FFFFFFF http://
+
+$$ ----- Search all of user-land memory for unicode based strings. IE: http://
+$$ s -u 0x0 L?0x7FFFFFFF http://
+
+$$ ----- Examples of looping through memory and printing URLs found.
+$$ .foreach (url {s –[1]a 0x0 L?0x7FFFFFFF http://}){.printf “Found URL: %ma\n”,${url}}
+$$ .foreach (url {s –[1]u 0x0 L?0x7FFFFFFF http://}){.printf “Found URL: %mu\n”,${url}}
+
+$$ ----- disable all breakpoints set
+bd *
+
+$$ ----- enable breakpoints here
+be 2-6
+.childbg 1
+

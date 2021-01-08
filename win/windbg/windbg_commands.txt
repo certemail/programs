@@ -1,0 +1,188 @@
+--- STEPPING ---------------------------------------------------------
+F8              step-into
+F10             step-over
+Shift-F11       step-out
+
+pc              step until next CALL instruction
+pa [ADDR]       step until ADDRESS is reached
+wt              trace and watch execution of functions and sub-functions (run at the beginning of function)
+wt -oR          trace and watch execution of functions and sub-functions (and display return values)
+wt -oa          trace and watch execution of functions (and report actual addresses of call)
+wt -ni -m MYDLL trace and only include code from MYDLL (and ignore everything else)
+wt =START END   trace from START address and stop and END address
+
+--- SYMBOLS -----------------------------------------------------------
+set _NT_SYMBOL_PATH
+
+- ways to set symbol path:
+    _NT_SYMBOL_PATH                                                         // environment variable
+    .sympath SRV*C:\symbols\*http://msdl.microsoft.com/download/symbols     //symbol path - store in C:\symbols
+   
+- download symbols from cmd line for a specific DLL:
+    symchk.exe "C:\Windows\system32\kernel32.dll" 
+        /s SRV*C:\symbols\*http://msdl.microsoft.com/download/symbols
+
+!sym noisy                              // more info on retrieval
+.reload /f                              // reload symbols
+.symopt                                 // display current symbol options enabled
+.symopt+0x100                           // SYMOPT_NO_UNQUALIFIED_LOADS (search only loaded modules - speed up)
+.symopt-0x100                           // turn off SYMOPT_NO_UNQUALIFIED_LOADS
+
+!chksym [SOMEDLL.dll]                   // check if symbols properly match for a dll
+
+
+--- BREAKPOINTS --------------------------------------------------------
+.bpcmds                                 // list commands used to set current breakpoints 
+bl                                      // list breakpoints
+bp $exentry                             // break on entry point
+bc [NUM]                                // clear break point
+bd [NUM]                                // disable breakpoint
+bm ws2_32!*                             // wild card to set multiple breakpoints (see "/a" option)
+
+bp MyDll!MyFunc "da poi(esp+4); g       // dereference 2nd pointer on stack
+
+bp kernel32!GetProcAddress ".printf \"GETPROCADDRESS=%ma\\n\", poi(esp+8); g"
+bp kernel32!WriteFile ".printf \"Dumping file contents from 0x%p as UNICODE: %mu\", poi(esp+0x8);.echo;g"
+
+printf /D "<b> this is bolded </b>"     // Debugger Markup Language (DML)
+
+
+Conditional breakpoint / Unicode str:
+- for ASCII str, use "/ma" for the alias "as" command
+- breakpoint commands are placed in separate file from main .wds script
+
+    bp kernel32!CreateEventW "$$<c:\\commands.txt"
+    
+    c:\commands.txt:
+        .if (poi(esp+4) != 0) { as /mu ${/v:EventName} poi(esp+4) } .else { ad /q ${/v:EventName} }
+        .if ($spat(@"${EventName}", "*PATTERN*") == 0)  { gc } .else { .echo EventName }
+
+
+--- SEARCH MEMORY -----------------------------------------------------------
+s -sa       START END                   // search for all ASCII strings (no specific pattern)
+s -su       START END                   // search for all UNICODE strings
+s -[l5]sa   START END                   // search for ASCII strings atleast 5 bytes in length
+s -a        START END http              // search memory for ASCII string "http" in start end region
+s -a        START L100 http             // start search at address 0x12345 and end 100 bytes
+s -b        START END 01 02 03 0A 0B    // search for byte pattern 0x0102030A0B
+s -a 0x0 L?0x7FFFFFFF http              // search all of user space for ACSII string
+s -u 0x0 L?0x7FFFFFFF http              // search all of user space for UNICODE string
+
+// dump all strings with max length of 100 containing "somestring"
+.foreach(OBJ {s -[1]a 0x0 L?0x7FFFFFFF "somestring"}){da /c 0n100 ${OBJ}}
+
+--- DISPLAY MEMORY --------------------------------------------------------
+dd poi(0x12345)                         // dereference what address 0x12345 points to
+dd poi(esp)                             // dereference what is on the top of the stack
+da /c100 0x12345                        // print ASCII string with 100 characters on a line (easy to copy/paste)
+dd /c1 0x400123 L5                      // display in one column the first 5 DWORDS
+
+!mapped_file [ADDR]                     // show name of file that contains ADDR
+
+--- EXCEPTIONS --------------------------------------------------------
+sx                                      // list currently set exceptions
+sxe ld [DLL_NAME]                       // break on module load (dont include ".dll")
+sxe -c "kv;!analyze -v;g;" e06d7363     // more detailed exception analysis
+sxi ld                                  // hide module loading messags
+sxr                                     // reset all sx* exceptions to default
+
+sxe -c "k;g;" e06d7363                  // configure exceptions such that we break on error e06d7363
+                                        // execute the command k;g; (print traceback in that thread
+                                        // and then continue
+
+--- LOG FILES --------------------------------------------------------
+.logopen [PATH_TO_LOG_FILE]             // open log 
+.logclose                               // close log
+
+--- FORMAT NUMBERS --------------------------------------------------------
+? 0n123                                 // display "123" as hexadecimal
+? 0x123                                 // display "0x123" as decimal
+.formats [NUM]
+.formats 0n15                           // display all formats (binary, ascii, etc.) for decimal 15
+.formats 0x3c                   
+
+--- OTHER COMMANDS --------------------------------------------------------
+.restart                                // restart exe (only if launched by WinDbg originally)
+
+!address                                // memory map
+!address 0x77112233                     // information on specific memory addr
+!dh 0xfd0000                            // PE header information
+lm                                      // list loaded modules
+x kernel32!Virtual*                     // browse symbols for module using wildcard
+k                                       // view call stack
+!findstack kernel32                     // find string "kernel32" in all threads' stacks
+
+dt -r ntdll!_IMAGE_NT_HEADERS           // show structure fields for symbol
+
+eb $peb+0x2 0x0                         // edit byte at PEB offset of 2 bytes and set to 0 (thwart anti-debug)
+
+.writemem C:\out.bin START END          // write out to disk memory from start to end address 
+                                           use !address to get end range of memory segment
+
+.childdbg 1                             // debug any child processes created
+|0s |1s |2s                             // switch between parent & child processes
+
+.outmask                                // control debugger command window output
+.outmask-0x20                           // do not display registers after each step
+.outmask /d                             // restore default outmask
+
+--- SCRIPT FILES -----------------------------------------------------------
+// run script WITHOUT contents concatenated into a single command block
+windbg -W myworkspace -o -c "$<C:\Path\To\myscriptfile.txt" TARGET.EXE
+
+// run script cmds literally, replace all carriage returns with semicolons,
+//  and execute the resulting text as a single command block
+windbg -W myworkspace -o -c "$$><C:\Path\To\myscriptfile.txt" TARGET.EXE
+
+// enable breakpoints after a certain breakpoint has been reached
+bp 0x12345 "be 1;be 2;be 3;g"
+$$
+bp SomeFunc1 ".printf ...g;"
+bp SomeFunc2 ".printf ...g;"
+bp SomeFunc3 ".printf ...g;"
+$$
+$$ disable breakpoints initially until 0x12345 code is reached, then enable them
+bd 1;bd 2; bd 3; 
+g
+
+
+--- GFLAGS  -----------------------------------------------------------
+-To attach to a process immediately after it is launched (and also load workspace & windbg script file):
+    * Run "Gflags" from 'Run' or from cmd prompt (Run-as Administrator) -> Image File tab
+    * Image:     "MYFILE.EXE"
+    * Debugger:  "C:\Program Files\Debugging Tools for Windows (x64)\windbg.exe" -W [MYWORKSPACE] 
+                          -o -c $<C:\Users\Administrator\[MYWINDBGSCRIPT.TXT]
+
+-To clear and allow the process to be launched normally:
+    * Image:     "MYFILE.EXE"
+    * Uncheck "Debugger"
+
+-To add/remove flags from command line (ex. below "show loader snaps" - sls)
+    $> gflags /i MYAPP.EXE -i [+|-]sls
+    
+
+--- REMOTE DEBUGGING  -----------------------------------------------------------
+Remote Stub:
+    -TARGET PC (start dbg server and verify listening on correct port):
+        * C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\dbgsrv.exe -t tcp:port=[PORT_NUM]
+        * netstat -a | findstr [PORT_NUM]  
+
+    -DEBUGGER PC (start windbg GUI and connect to remote process)
+        * File -> Connect to Remote Stub... -> Connection String: tcp:port=[PORT_NUM],server=[PC-TARGET]
+        * Attach to a Process...
+
+
+    -Use cmd.exe to kill dbgsrv.exe running:
+        * TASKKILL /IM dbgsrv.exe /F
+        * netstat -ano | findstr [PORT_NUM]     (check if still listening)
+        * TASKILL /PID 1234 /F
+
+
+    -Kill remote process from inside windbg:
+        .shell -x TASKKILL /S PC-TARGET /U user /FI "IMAGENAME eq notepad.exe"
+
+        NOTE!!! must disable Remote UAC on the target computer !!! use regedit:
+        * HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+        * Edit -> "New DWORD Value"
+        * Create if entry "LocalAccountTokenFilterPolicy" does not exist
+        * Modify "Value data", and set to "1"
