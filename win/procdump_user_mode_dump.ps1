@@ -1,1 +1,0 @@
-ps | ? { $_.Id -gt 4 } | % { procdump $_.Id }
