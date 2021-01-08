@@ -4,7 +4,7 @@ set PROG=%PROG_BASENAME%.%EXT%
 
 REM File that has the ProcMon configuration file
 set CONFIG_FILE_DIR=.\
-set CONFIG_FILE=%PROG_BASENAME%.pmc
+set CONFIG_FILE=category_is_write.pmc
 set CONFIG_FILEPATH=%CONFIG_FILE_DIR%\%CONFIG_FILE%
 
 REM Filename with ProcMon output
