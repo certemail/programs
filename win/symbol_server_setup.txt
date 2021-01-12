@@ -1,0 +1,24 @@
+HOW TO CREATE A SYMBOL SERVER / OFFLINE SYMBOL DOWNLOAD
+
+- Create a Windows VM with a new volume (e.g., E:\) of at least 200GB (this will contain the symbols)
+
+- [OPTIONAL]: Add a second NIC on the symbol server that can connect to the Internet
+
+- Configure the new volume for sharing
+    * Right-click on new volume -> Properties -> Sharing and specify network accessible path, e.g., \\MY-SYMBOL-SERVER\Symbols
+
+- Generate the manifests for all symbols in System32 and SysWow64 directories:
+    * symchk /om system32_manifest.txt C:\Windows\System32\*
+    * symchk /om sysWOW64_manifest.txt C:\Windows\SysWOW64\*
+
+- Generate the manifest for the kernel symbols:
+    * mkdir empty (this is used to avoid name resolution delays when invoking symchk so a symbol server is not contacted)
+    * dir /b %SYSTEMROOT%\System32\nt*.exe (this determines kernel exe name - likely result is: ntoskrnl.exe)
+    * symchk /om kernel_manifest.txt /ie ntoskrnl.exe /s C:\empty
+
+- Move the manifest files over to the Internet connected symbol server (or other system) and run:
+    * symchk /v /im system32_manifest.txt /s SRV*c:\my_downloaded_symbols*https://msdl.microsoft.com/download/symbols
+    * symchk /v /im sysWOW64_manifest.txt /s SRV*c:\my_downloaded_symbols*https://msdl.microsoft.com/download/symbols
+    * symchk /v /im kernel_manifest.txt /s SRV*c:\my_symbols*https://msdl.microsoft.com/download/symbols
+
+
