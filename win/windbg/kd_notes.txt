@@ -1,0 +1,12 @@
+#--- LOCAL KERNEL DEBUGGING:
+-Is disabled by default; options to enable:
+1) MSCONFIG.EXE: "Advanced Options" -> "Debug" (select to enable)
+2) bcdedit -debug on
+    
+- Reboot and launch WinDbgX; select "File" -> "Attach to Kernel" -> "Local"
+- Or, from command line:
+    C:> windbgx /kl     (WinDbg Preview)
+    C:> kd -kl          (console - kd)
+
+#--- LIVEKD (SysInternals) does not require boot in debugging mode (takes dump snapshot instead)
+C:> livekd              
