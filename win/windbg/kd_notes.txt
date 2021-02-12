@@ -10,3 +10,10 @@
 
 #--- LIVEKD (SysInternals) does not require boot in debugging mode (takes dump snapshot instead)
 C:> livekd              
+
+#---enumerate all processes
+!process 0 0 
+
+#---switch context to process and load user mode symbols
+_kd> .process /r /p [PROCESS_NAME.EXE]
+lkd> .process /r /P [PROCESS_NAME.EXE] (uppercase "/P" for live debugging only)
