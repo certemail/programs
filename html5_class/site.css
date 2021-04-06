@@ -1,0 +1,178 @@
+:root {
+    --light_color: rgb(255, 255, 255);
+    --dark_color_1: #3e7046;
+    --dark_color_2: #000000;
+  }
+
+body {
+    font-family: Verdana, Geneva, Tahoma;
+}
+
+/* HEADER */
+#pg_hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background-color: var(--light_color);
+    width: 100%;
+    border-bottom: 1px solid var(--dark_color_2);
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#pg_hdr_logo {
+    height: 50px;
+    width: 50px;
+}
+
+#pg_hdr_list {
+    display: flex;
+    list-style-type: none;
+}
+
+#pg_hdr_list li {
+    padding: 10px;
+}
+
+#pg_hdr_list li::after {
+    content: '\25bc'; /* down arrow symbol */
+    padding-right: 10px;
+}
+
+.pg_hdr_links {
+    text-decoration: black;
+}
+
+#pg_hdr_search_box {
+    border-radius: 10px;
+    padding: 5px;
+    box-shadow: inset 0px 0px 5px gray;
+    outline: none;
+}
+
+#pg_hdr_search_button {
+    margin-left: 10px;
+    margin-right: 30px;
+    background-color: red;
+}
+
+#pg_hdr_empty_space {
+    flex-grow: 40;
+ }
+
+ #pg_hdr_hamburger {
+    font-size: 2em;
+    font-weight: bold;
+ }
+
+ /* FOOTER */
+ #pg_ftr {
+    display: grid;
+    border-radius: 10px;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas: 
+    'customer_svc company_stuff connect_with_us'
+    'copyright copyright copyright';
+   
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+ }
+
+ .pg_ftr_box {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: center;
+    background-color: bisque;  
+ }
+
+ .pg_ftr_text_heading {
+    padding-left: 40px;
+    font-weight: bold;
+}
+
+.pg_ftr_links_ul {
+    list-style-type: none;
+}
+
+.pg_ftr_link:link {
+    text-decoration: black;
+    font-size: small;
+}
+
+#pg_ftr_customer_svc {
+    grid-area: customer_svc;
+}
+
+#pg_ftr_company_stuff {
+    grid-area: company_stuff;
+}
+
+#pg_ftr_connect_with_us {
+    grid-area: connect_with_us;
+}
+
+#pg_ftr_copyright {
+    grid-area: copyright;
+    text-align: center;
+    font-size: small;
+}
+
+#main_featured {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+    'product_image product_description';
+}
+
+#product_main_img {
+    grid-area: product_image;
+}
+
+#product_main_description {
+    grid-area: product_description;
+}
+
+@media (max-width:768px) {
+    #pg_hdr {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #pg_hdr_logo {
+        height: 175px;
+        width: 175px;
+    }
+
+    #pg_hdr_search_button {
+        margin-left: 0px;
+        margin-right: 0px;
+        background-color: red;
+    }
+
+
+    #pg_hdr_empty_space {
+        display: none;
+     }
+
+    #pg_hdr_hamburger {
+        display: none;
+    }
+
+    #pg_ftr {
+        display: flex;
+        flex-direction: column;   
+        justify-content: space-around; 
+    }
+    
+}
+
+
