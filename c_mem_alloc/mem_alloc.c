@@ -4,13 +4,13 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+/* default from /proc/sys/kernel/pid_max is "32768" */
 #define MAX_PID_LEN     5
 
 char *read_pid(char *filename)
 {
     int fd;
-    int i;
-    char tmp_buf[1];
+    int bytes_read = 0;
     char *pidbuf = NULL;
 
 
@@ -29,12 +29,20 @@ char *read_pid(char *filename)
         printf("[%s]: Zeroizing buffer\n", __func__);
         memset( pidbuf, '\0', sizeof(pidbuf) + 1 );
         
+        /* int i;
+        char tmp_buf[1]; 
+
         i = 0;
-        while( 1 == read( fd, tmp_buf, 1 ) )
+        while( (1 == read( fd, tmp_buf, 1 )) && (i < MAX_PID_LEN) )
         {
             pidbuf[i] = tmp_buf[0];
             i++;
-        }
+            printf("[%s]: Num bytes read: %d\n", __func__, i);
+        } */
+
+        bytes_read = read( fd, pidbuf, MAX_PID_LEN );
+        printf("[%s]: Bytes read = %d\n", __func__, bytes_read);
+
         printf("[%s]: Closing fd\n", __func__);
         close(fd);
         /* printf("[%s]: pidbuf = %s\n", __func__, pidbuf); */
