@@ -1,13 +1,13 @@
 CC=gcc
 ARCH=  # -m32 for 32-bit
-CFLAGS=${ARCH}
+CFLAGS=${ARCH} -Wall -pedantic -g
 LDFLAGS=${ARCH}
 LIBS=
 SRCS=$(shell find . -maxdepth 1 -name '*.c')
 OBJS=${SRCS:.c=.o}
 TARGET=${OBJS:.o=}
 
-all:    clean ${TARGET}
+all:    ${TARGET}
 
 ${TARGET}:  ${OBJS}
 	${CC} ${LDFLAGS} -o ${TARGET} ${OBJS} ${LIBS}
