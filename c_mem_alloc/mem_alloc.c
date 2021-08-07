@@ -19,23 +19,23 @@ char *read_pid(char *filename)
     {
         printf("[%s]: Opened \"%s\", fd=%d\n", __func__, filename, fd);
 
-        printf("alloc memory...\n");
+        printf("[%s]: Allocating memory...\n", __func__);
         pidbuf = (char *)malloc( MAX_PID_LEN + 1 );
         if ( NULL == pidbuf )
         {
             printf("malloc failed\n");
             goto EXIT;
         }
-        printf("zeroing buffer\n");
+        printf("[%s]: Zeroizing buffer\n", __func__);
         memset( pidbuf, '\0', sizeof(pidbuf) + 1 );
         
         i = 0;
-        while( read( fd, tmp_buf, 1 ) == 1 )
+        while( 1 == read( fd, tmp_buf, 1 ) )
         {
             pidbuf[i] = tmp_buf[0];
             i++;
         }
-        printf("closing fd\n");
+        printf("[%s]: Closing fd\n", __func__);
         close(fd);
         /* printf("[%s]: pidbuf = %s\n", __func__, pidbuf); */
     }
@@ -68,31 +68,6 @@ int main(void)
     return 0;
 }
 
-
-/*
-void read_file(char *filename)
-{
-    int fd;
-    char buf[1];
-
-    errno = 0;
-
-    fd = open( filename, O_RDONLY );
-    if( fd >= 0 )
-    {
-        printf("[%s]: Opened \"%s\", fd=%d\n", __func__, filename, fd);
-        while( read( fd, buf, 1 ) == 1 )
-        {
-            printf("%c", buf[0]);
-        }
-        close(fd);
-    }
-    else
-    {
-        perror( __func__ );
-    }
-}
-*/
 
 /*
 void read_file(char **line);
